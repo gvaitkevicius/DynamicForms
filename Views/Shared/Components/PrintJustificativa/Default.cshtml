@@ -1,0 +1,15 @@
+﻿@{bool disabled = false; }
+@if (ViewBag.tipoFeed.ToUpper() != "N")
+{
+    <div class="form-group has-feedback">
+        <label class="form-label">Justificativa</label>
+        <div class="controls">
+            <textarea style="height: @ViewBag.heigth;" @(disabled ? "disabled" : "") id="@ViewBag.txtId" class="form-control"></textarea>
+            <span class="help-block"></span>
+        </div>
+    </div>
+}
+else
+{
+    disabled = true;
+}

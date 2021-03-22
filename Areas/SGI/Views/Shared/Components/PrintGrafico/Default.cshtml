@@ -1,0 +1,236 @@
+﻿
+@using DynamicForms.Areas.SGI.Model
+@{
+    Graficos graficos = Model as Graficos;
+}
+@foreach (MedicoesInd item in Model.Indicadores)
+{
+    if (graficos.Medicoes.Count(x => x.IND_ID == item.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual) > 0)
+    {
+        <div class="col-xs-12">
+            <section class="box">
+                <header class="panel_header">
+                    <h2 class="title pull-left">@item.Indicador.IND_DESCRICAO</h2>
+                    <div class="actions panel_actions pull-right">
+                        <a title="Grafico de pizza"  data-ind-id="@item.IND_ID" class="aIconTipoGraficoPie" href="#">
+                            <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                        </a>
+                        <a title="Grafico de Linha"  data-ind-id="@item.IND_ID" class="aIconTipoGraficoLine" href="#">
+                            <i class="fa fa-line-chart" aria-hidden="true"></i>
+                        </a>
+                        <a title="Grafico de barras"  data-ind-id="@item.IND_ID" class="aIconTipoGraficoBar" href="#">
+                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                        </a>
+
+
+                        <a title="Excel"  data-ind-id="@item.IND_ID" class="aIExcel" href="#">
+                            <i class="fa fa-list" aria-hidden="true"></i>
+                        </a>
+
+                        @if (graficos.Favoritos.Count(x => x.ID_INDICADOR == item.IND_ID) > 0)
+                        {
+                            <a onclick="AddFavorito('@item.IND_ID')" title="Definir como favorito" ><i id="fav_@item.IND_ID" class="fa fa-star icon-warning animated fadeIn"></i></a>
+                        }
+                        else
+                        {
+                            <a onclick="AddFavorito('@item.IND_ID')" title="Definir como favorito" ><i id="fav_@item.IND_ID" class="fa fa-star-o icon-warning animated fadeIn"></i></a>
+                        }
+
+                        <a onclick="AtuDados('@item.IND_ID','@ViewBag.anoAtual','@item.Indicador.DIM_ID', '@item.PER_ID.ToString().Trim()', '@item.Indicador.IND_GRAFICO')" class="fa fa-refresh" title="Atualizar dados do indicador" ></a>
+                    </div>
+                </header>
+                <div class="content-body">
+                    <div class="form-inline form-inline form-group" id="divVisaoGraf_@item.IND_ID">
+                        <div class="form-group" style="display: none">
+                            <label class="form-label">Grafico</label>
+                            <select data-grupo="sltTipoGrafico" data-ind-id="@item.IND_ID" class="" id="sltTipoGrafico_@item.IND_ID">
+                                <option value="1">Barra</option>
+                                <option value="2">Linha</option>
+                                 <option value="3">Pizza</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.DropDownList("sltDimensaoGrafico_" + item.IND_ID, new SelectList(item.Indicador.Dimensoes, "Id", "Descricao") as IEnumerable<SelectListItem>, new { @class = "", @data_grupo = "sltDimensaoGrafico", @data_ind_id = item.IND_ID })
+                        </div>
+                        <div class="form-group divSubDimencao_@item.IND_ID">
+                            @Html.DropDownList("sltSubDimensaoGrafico_" + item.IND_ID, new SelectList("", "Id", "Descricao") as IEnumerable<SelectListItem>, new { @class = "", @data_grupo = "sltSubDimensaoGrafico", @data_ind_id = item.IND_ID })
+                        </div>
+                        <div class="form-group divPeriodo_@item.IND_ID">
+                            @Html.DropDownList("sltPeriodoGrafico_" + item.IND_ID, new SelectList(item.Indicador.Dimensoes.ToArray()[0].Periodos, "Id", "Descricao") as IEnumerable<SelectListItem>, new { @class = "", @data_grupo = "sltPeriodoGrafico", @data_ind_id = item.IND_ID })
+                        </div>
+                        <div style="display: none" class="form-group divDatas_@item.IND_ID">
+                            <label class="form-label">Início</label>
+                            <input style="width: 84px" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date-language="pt-BR" value="@DateTime.Now.AddDays(-30).ToString("dd/MM/yyyy")" type="text" id="dataIniGrafico_@item.IND_ID" data-ind-id="@item.IND_ID" class="datasPeriodo" />
+                        </div>
+                        <div style="display: none" class="form-group divDatas_@item.IND_ID">
+                            @*<label class="form-label">Início</label>*@
+                            <input style="width: 84px" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date-language="pt-BR" value="@DateTime.Now.ToString("dd/MM/yyyy")" type="text" id="dataFimGrafico_@item.IND_ID" data-ind-id="@item.IND_ID" class="datasPeriodo" />
+                        </div>
+                    </div>
+                    <h5>
+                        <b class="padding-15">Ano:</b> @ViewBag.anoAtual
+                        <b class="padding-15">Negócio:</b>@item.Indicador.T_Negocio.NEG_DESCRICAO
+                        <b class="padding-15">Ref.Meta:</b>
+                        @if (item.TIPO_COMPARADOR == "0")//Igual
+                        {
+                            <i class="fa fa-arrows-h"></i>
+                        }
+                        else if (item.TIPO_COMPARADOR == "1")//Maior ou igual a
+                        {
+                            <i class="fa fa-arrow-up"></i>
+                        }
+                        else if (item.TIPO_COMPARADOR == "2")//Menor ou igual a
+                        {
+                            <i class="fa fa-arrow-down"></i>
+                        }
+                        <a class="padding-15" href="@Url.Action("PlanoAcao", "PlanoAcao", new { area = "sgi", idIndicador = item.IND_ID, periodo = item.Ano})">Plano de ação</a>
+                    </h5>
+                    @*** Carrega o gráfico aqui ***@
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="" style="height:500px;" id="bar_@item.IND_ID"></div>
+                        </div>
+                    </div> <!-- End .row -->
+                    @*** Carrega a tabela do gráfico aqui quando existir sub dimencoes ***@
+                    <span id="tbar_@item.IND_ID"></span>
+
+                </div>
+
+                @****Informações adicionais****@
+                <div class="panel-group transparent" id="accordion-@item.IND_ID" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <ul class="nav nav-tabs transparent">
+                                <li class="active">
+                                    <a href="#tab-@item.IND_ID" data-toggle="tab">
+                                        <i class="fa fa-arrow-circle-o-right"></i>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="#tab1-@item.IND_ID" data-toggle="tab">
+                                        @if (graficos.Complementares.Count(x => x.T_Metas.IND_ID == item.IND_ID) > 0)
+                                        {
+                                            <span class="badge badge-success">1</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">0</span>
+                                        }
+                                        Variáveis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tab2-@item.IND_ID" data-toggle="tab">
+                                        @if (item.DESC_CALCULO != "" && item.DESC_CALCULO != null)
+                                        {
+                                            <span class="badge badge-success">1</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">0</span>
+                                        }
+                                        Inf. de cálculo
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tab3-@item.IND_ID" data-toggle="tab">
+                                        <span class="badge badge-success">@graficos.PlanoAcoes.Count(x => x.T_Metas.IND_ID == item.IND_ID)</span> Plano de ação
+                                    </a>
+                                </li>
+                            </ul>
+
+                            @*** Impressão informações complementares ***@
+                            <div class="tab-content transparent">
+                                <div class="tab-pane fade in active" id="tab-@item.IND_ID">
+
+                                    <p>Informações complementares</p>
+
+                                </div>
+
+                                @*** Dados Adicionais ***@
+                                <div class="tab-pane fade in" id="tab1-@item.IND_ID">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Período</th>
+                                                    @foreach (var acMes in graficos.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { INF_DESCRICAO = x.INF_DESCRICAO }).Select(x => new { descricao = x.Key.INF_DESCRICAO }).OrderBy(x => x.descricao))
+                                                    {
+                                                        <th>@acMes.descricao</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var acMes in graficos.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { DATA = x.INF_DATA.Substring(0, 6) }).Select(x => new { data = x.Key.DATA }).OrderBy(x => x.data))
+                                                {
+                                                    <tr>
+                                                        <td>@acMes.data</td>
+                                                        @foreach (var acValores in graficos.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { INF_DESCRICAO = x.INF_DESCRICAO }).Select(x => new { descricao = x.Key.INF_DESCRICAO }).OrderBy(x => x.descricao))
+                                                        {
+                                                            <td>@graficos.Complementares.Where(x => x.INF_DATA.Substring(0, 6) == acMes.data && x.INF_DESCRICAO == acValores.descricao && x.T_Metas.IND_ID == item.IND_ID).Sum(x => x.INF_VALOR).ToString("N")</td>
+                                                        }
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @*** Memória de cálculo ***@
+                                <div class="tab-pane fade" id="tab2-@item.IND_ID">
+
+                                    <p>
+                                        @Html.Raw(item.DESC_CALCULO)
+                                    </p>
+
+                                    <p>
+                                        <b>Resp. Carga.:</b> @item.Indicador.RESPOSAVELCARGA
+                                    </p>
+                                    <p>
+                                        <b>Resp. Ind.:</b> @item.Indicador.RESPOSAVELIND
+                                    </p>
+                                    <p>
+                                        <b>Fonte dados:</b> @item.IND_CONEXAO
+                                    </p>
+                                    <p>
+                                        @if (!String.IsNullOrEmpty(item.Indicador.IND_DTCRIACAO.ToString()))
+                                        {
+                                            <b>Dt. Criação:</b> @item.Indicador.IND_DTCRIACAO.ToString("dd/MM/yyyy")
+                                        }
+                                    </p>
+                                </div>
+
+                                @*** Plano de ação ***@
+                                <div class="tab-pane fade" id="tab3-@item.IND_ID">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Usuário</th>
+                                                    <th>Data</th>
+                                                    <th>Ação</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var plano in graficos.PlanoAcoes.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { nomeUser = x.T_Usuario.USE_NOME, usuario = x.T_Usuario.USE_EMAIL, data = x.PLA_DATA, descricao = x.PLA_DESCRICAO }).Select(x => new { data = x.Key.data, descricao = x.Key.descricao, usuario = x.Key.usuario, nomeUser = x.Key.nomeUser }))
+                                                {
+                                                    <tr>
+                                                        <td title="@plano.nomeUser">@plano.usuario</td>
+                                                        <td>@plano.data</td>
+                                                        <td>@plano.descricao</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    }
+}

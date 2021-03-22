@@ -1,0 +1,50 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.T_HORARIO_RECEBIMENTO
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+<div>
+    <h4>HORARIO_RECEBIMENTO</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CLI_ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CLI_ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HRE_DIA_DA_SEMANA)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_DIA_DA_SEMANA)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HRE_HORA_INICIAL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_HORA_INICIAL)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HRE_HORA_FINAL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_HORA_FINAL)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Alterar", "Edit", new { id = Model.HRE_ID }) |
+    @Html.ActionLink("Voltar", "Index", "HorariosRecebimento", new { area="PlugAndPlay"})
+</p>
+

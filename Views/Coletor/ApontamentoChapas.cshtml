@@ -1,0 +1,73 @@
+﻿@model DynamicForms.Util.LogPlay;
+@{
+    ViewBag.Title = "Apontamento de Chapas";
+    Layout = "";
+}
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+
+    <title>Apontamento de Chapas</title>
+</head>
+
+<body>
+    <a href="/Coletor/Index">Voltar</a> <br /><br />
+
+    <form method="post" action="ApontamentoChapas">
+        <label for="codigo_de_barras">Código de Barras</label>
+        <p><input type="text" class="campo" id="codigo_de_barras" name="codigo_de_barras" /></p>
+
+        <label for="quantidade">Quantidade</label>
+        <p><input type="text" class="campo" id="quantidade" name="quantidade" /></p>
+
+        <p><input type="submit" value="Salvar" id="salvar" name="salvar" /></p>
+    </form>
+
+    <br /><br />
+
+    <div id="resposta">
+        @if (ViewBag.Logs != null && ViewBag.ListObjetos != null)
+        {
+            //varre os logs para detectar se existe alguma mensagem de erro
+            //obs: tentei fazer com LINQ, porém, não consegui encontrar uma maneira de fazer LINQ em uma lista dinâmica
+            bool contem_erro = false;
+            foreach (var log in ViewBag.Logs)
+            {
+                if (log.Status.ToUpper() == "ERRO")
+                { contem_erro = true; }
+            }
+
+
+            //se não contem nenhum erro nos logs, mostra uma mensagem de sucesso apenas
+            if (!contem_erro)
+            {
+                <p>Sucesso ao apontar chapa !</p>
+            }
+            else //senão, mostra todos os logs
+            {
+                @foreach (var log in ViewBag.Logs)
+                {
+                    if (log.Status.ToUpper() == "ERRO")
+                    {
+                        <p>@log.MsgErro</p>
+                    }
+                    else
+                    {
+                        <p>@log.PrimaryKey</p>
+                    }
+                }
+
+                @foreach (dynamic obj in ViewBag.ListObjetos)
+                {
+                    if (obj.PlayAction.ToString().ToUpper() == "ALERT")
+                    {
+                        <p>@obj.PlayMsgErroValidacao</p>
+                    }
+                }
+            }
+
+        }
+    </div>
+</body>
+<script src="~/Functions/Script/Coletor/Coletor.js"></script>
+</html>

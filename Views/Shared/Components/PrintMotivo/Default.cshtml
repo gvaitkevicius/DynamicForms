@@ -1,0 +1,17 @@
+﻿<div class="form-group has-feedback">
+    @if (ViewBag.tipoFeed.ToUpper() == "G")
+    {
+        <label class="form-label">Ocorrência</label>
+        @Html.DropDownList(ViewBag.sltId, ViewBag.sltOcoAltaPerform as List<SelectListItem>, "Selecione a ocorrência...", new { @class = "form-control" })
+    }
+    else if (ViewBag.tipoFeed.ToUpper() == "B")
+    {
+        <label class="form-label">Ocorrência</label>
+        @Html.DropDownList(ViewBag.sltId, ViewBag.sltOcoBaixaPerform as List<SelectListItem>, "Selecione a ocorrência...", new { @class = "form-control" })
+    }
+    else
+    {
+        @*@Html.DropDownList(sltId, new List<SelectListItem>(), "Selecione a ocorrência...", new { @disabled = true, @class = "form-control" })*@
+    }
+    <span class="help-block"></span>
+</div>

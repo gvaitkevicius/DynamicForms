@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "Dynamic Link";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input type="hidden" id="ArrayDeValoresDefault" value="@ViewBag.ArrayDeValores" />
+<input type="hidden" id="ParametrosConstrutor" value="@ViewBag.ParametrosConstrutor" />
+
+@{
+    if (!String.IsNullOrEmpty(ViewBag.NamespaceObjeto) && (!String.IsNullOrEmpty(ViewBag.ArrayDeValores) ||
+        !String.IsNullOrEmpty(ViewBag.ParametrosConstrutor)))
+    {
+        <script>
+        window.onload = function () {
+
+            var ArrayDeValoresDefault = document.getElementById('ArrayDeValoresDefault').value;
+            var ParametrosConstrutor = document.getElementById('ParametrosConstrutor').value;
+
+            criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@ViewBag.NamespaceObjeto', ArrayDeValoresDefault, ParametrosConstrutor);
+        };
+        </script>
+    }
+}
+

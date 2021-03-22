@@ -1,0 +1,91 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.Romaneio
+@{
+    ViewBag.Title = "Romaneio";
+    Layout = "";
+}
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+
+    <title>Romaneio</title>
+</head>
+
+<body>
+    <a href="/Coletor/Index">Voltar</a> <br /><br />
+
+    <form method="post" action="Romaneio">
+        <label for="incluir">ROMANEIO</label>
+        <p>
+            @if (ViewBag.Dados.INCLUIR == "N")
+            {
+                <input type="radio" id="incluir_s" name="incluir" value="S" /><b>INCLUIR</b>
+                <input type="radio" id="incluir_n" name="incluir" value="N" checked="checked" /><b>EXCLUIR</b>
+            }
+            else
+            {
+                <input type="radio" id="incluir_s" name="incluir" value="S" checked="checked" /><b>INCLUIR</b>
+                <input type="radio" id="incluir_n" name="incluir" value="N" /><b>EXCLUIR</b>
+            }
+
+        </p>
+        <label for="car_id">CÓDIGO DA CARGA</label>
+        <p><input type="text" class="campo" id="car_id" name="car_id" value="@ViewBag.Dados.CargaId" /></p>
+
+        <label for="ord_id">CÓDIGO DO PEDIDO</label>
+        <p><input type="text" class="campo" id="ord_id" name="ord_id" value="@ViewBag.Dados.PedidoId" /></p>
+
+        <label for="codigo_de_barras">CÓDIGO DE BARRAS</label>
+        <p><input type="text" class="campo" id="codigo_de_barras" name="codigo_de_barras" /></p>
+
+        <p><input type="submit" value="Salvar" id="salvar" name="salvar" /></p>
+    </form>
+
+    <br />
+    <br />
+
+    <div id="resposta">
+        @if (ViewBag.Logs != null && ViewBag.ListObjetos != null)
+        {
+            //varre os logs para detectar se existe alguma mensagem de erro
+            //obs: tentei fazer com LINQ, porém, não consegui encontrar uma maneira de fazer LINQ em uma lista dinâmica
+            bool contem_erro = false;
+            foreach (var log in ViewBag.Logs)
+            {
+                if (log.Status.ToUpper() == "ERRO")
+                { contem_erro = true; }
+            }
+
+
+            //se não contem nenhum erro nos logs, mostra uma mensagem de sucesso apenas
+            if (!contem_erro)
+            {
+                <p>Sucesso ao romanear carga !</p>
+            }
+            else //senão, mostra todos os logs
+            {
+                @foreach (var log in ViewBag.Logs)
+                {
+                    if (log.Status.ToUpper() == "ERRO")
+                    {
+                        <p>@log.MsgErro</p>
+                    }
+                    else
+                    {
+                        <p>@log.PrimaryKey</p>
+                    }
+                }
+
+                @foreach (dynamic obj in ViewBag.ListObjetos)
+                {
+                    if (obj.PlayAction.ToString().ToUpper() == "ALERT")
+                    {
+                        <p>@obj.PlayMsgErroValidacao</p>
+                    }
+                }
+            }
+
+        }
+    </div>
+</body>
+<script src="~/Functions/Script/Coletor/Coletor.js"></script>
+</html>

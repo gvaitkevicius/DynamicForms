@@ -1,0 +1,57 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.T_HORARIO_RECEBIMENTO
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+<h2>Excluir Horario de Recebimento</h2>
+
+<h4>Você realmente deseja excluir este horário da lista?</h4>
+<div>
+    <h3>HORARIO RECEBIMENTO</h3>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            CLIENTE:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CLI_ID)
+        </dd>
+
+        <dt>
+            DIA DA SEMANA:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_DIA_DA_SEMANA)
+        </dd>
+
+        <dt>
+            HORA DE INICIO
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_HORA_INICIAL)
+        </dd>
+
+        <dt>
+            HORA  FIM:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HRE_HORA_FINAL)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+    <div class="form-actions no-color">
+        <input type="submit" value="Excluir" class="btn btn-danger" />
+        @Html.ActionLink("Voltar", "Index", "HorariosRecebimento", new { area = "PlugAndPlay" })
+    </div>
+    }
+</div>

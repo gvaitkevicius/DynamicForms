@@ -1,0 +1,174 @@
+﻿@{
+    ViewData["Title"] = "Interface";
+    Layout = null;
+}
+
+<div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#first" aria-controls="first" role="tab" data-toggle="tab"><strong>Resumo da importação</strong></a>
+        </li>
+        <li role="presentation">
+            <a href="#second" aria-controls="second" role="tab" data-toggle="tab"><strong>Logs: Itens importados</strong> </a>
+        </li>
+        <li role="presentation">
+            <a href="#tird" aria-controls="tird" role="tab" data-toggle="tab"><strong>Logs: Falhas na Importação</strong></a>
+        </li>
+        <li role="presentation">
+            <a asp-area="" asp-controller="DynamicWeb" asp-action="Index" class="tab" aria-controls="tird" role="tab" data-toggle="tab"><strong>Voltar</strong></a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="first">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!--BOX-->
+                        <div class="box">
+                            <!--BOX HEADER-->
+                            <div class="box-header">
+                                <!--BOX TITLE-->
+                                <div class="box-title pull-left">
+                                    <p><i class="fa  fa-warning fa-lg" style="font-size:24px;color:red"></i></p>
+                                </div>
+                            </div>
+                            <!--end: BOX HEADER-->
+                            <!--BOX CONTENT-->
+                            <div class="box-content col-md-10">
+                                @if (ViewBag.Pendencias != null)
+                                {
+                                    <div class="table-responsive" id="tbl_pendencias">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"><strong>Entidade</strong></th>
+                                                    <th scope="col"><strong>Id</strong></th>
+                                                    <th scope="col"><strong>Mensagem</strong></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.Pendencias)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ENTIDADE</td>
+                                                        <td>@item.ID</td>
+                                                        <td>@item.MSG</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                            <!--end: BOX CONTENT-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="second">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="box">
+                            <!--BOX HEADER-->
+                            <div class="box-header">
+                                <!--BOX TITLE-->
+                                <div class="box-title pull-left">
+                                    <p><i class="fa  fa-warning fa-lg" style="font-size:24px;color:blue"></i></p>
+                                </div>
+                            </div>
+                            <!--end: BOX HEADER-->
+                            <!--BOX CONTENT-->
+                            <div class="box-content col-md-10">
+                                @if (ViewBag.LogsDoSistemaOk != null)
+                                {
+                                    <div class="table-responsive" id="tbl_logs">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"><strong>Nome da Classe</strong></th>
+                                                    <th scope="col"><strong>Status</strong></th>
+                                                    <th scope="col"><strong>Mensagem erro</strong></th>
+                                                    <th scope="col"><strong>PrimaryKey</strong></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.LogsDoSistemaOk)
+                                                {
+                                                    @foreach (var it in item.Erros)
+                                                    {
+                                                        <tr>
+                                                            <td>@it.NomeClasse</td>
+                                                            <td>@it.Status</td>
+                                                            <td>@it.MsgErro</td>
+                                                            <td>@it.PrimaryKey</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                            <!--end: BOX CONTENT-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="tird">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box">
+                            <!--BOX HEADER-->
+                            <div class="box-header">
+                                <!--BOX TITLE-->
+                                <div class="box-title pull-left">
+                                    <p><i class="fa  fa-warning fa-lg" style="font-size:24px;color:red"></i></p>
+                                </div>
+                            </div>
+                            <!--end: BOX HEADER-->
+                            <!--BOX CONTENT-->
+                            <div class="box-content col-md-10">
+                                @if (ViewBag.LogsDoSistemaBad != null)
+                                {
+                                    <div class="table-responsive" id="tbl_logs">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"><strong>Nome da Classe</strong></th>
+                                                    <th scope="col"><strong>Status</strong></th>
+                                                    <th scope="col"><strong>Mensagem erro</strong></th>
+                                                    <th scope="col"><strong>PrimaryKey</strong></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.LogsDoSistemaBad)
+                                                {
+                                                    @foreach (var it in item.Erros)
+                                                    {
+                                                        <tr>
+                                                            <td>@it.NomeClasse</td>
+                                                            <td>@it.Status</td>
+                                                            <td>@it.MsgErro</td>
+                                                            <td>@it.PrimaryKey</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                            <!--end: BOX CONTENT-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

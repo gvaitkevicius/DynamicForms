@@ -1,0 +1,687 @@
+﻿@using P.Pager.Mvc.Core
+@using P.Pager
+@model DynamicForms.Areas.SGI.Model.Graficos
+@{
+    ViewData["Title"] = "SGI - Indicadores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*** Loading ***@
+<div id="divLoading" class="text-center hide" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Aguarde, processando dados...<img src="~/images/loading.gif">
+    </p>
+</div>
+
+
+@*** Cabeçalho ***@
+<div class="row">
+    <div class='col-xs-12'>
+        <div class="page-title">
+
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { area = "sgi", id = "formDados" }))
+            {
+                <div class="pull-left">
+                    <div class="btn-group focus-btn-group">
+                        @Html.DropDownList("sltAno", ViewBag.pAno as IEnumerable<SelectListItem>, new { @class = "select2", onchange = "this.form.submit();" })
+                        @*@Html.DropDownList("pAno", null, null, new { @class = "select2", onchange = "this.form.submit();" })*@
+                    </div>
+                    <div class="btn-group focus-btn-group" style="width: 200px;">
+                        @Html.DropDownList("idNegocio", null, "Filtrar por negócio...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group focus-btn-group" style="width: 300px;">
+                        @Html.DropDownList("idGrupo", null, "Filtrar por grupo de indicador...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <div class="btn-group focus-btn-group">
+                        @Html.Hidden("pGrafico", (string)ViewBag.grafico)
+                        <a href="@Url.Action("DynamicForm", "DynamicWeb", new { area = "", tipo = "CLASSE", url = "/DynamicWeb/GetClassForm?nome_classe=DynamicForms.Areas.PlugAndPlay.Models.Consultas" })" title="consultas" data-placement="bottom" target="_blank"><i class="fa fa-search"></i></a>
+                        <a href="@Url.Action("Index", "Home", new { area = "sgi", pGrafico = "M" })" title="Lista de metas" data-placement="bottom"><i class="fa fa-line-chart icon-sm"></i></a>
+                        <a href="@Url.Action("Index", "Home", new { area = "sgi", pGrafico = "G" })" title="Exibir em gráfico" data-placement="bottom"><i class="fa fa-bar-chart icon-sm"></i></a>
+                        <a href="@Url.Action("Index", "Home", new { area = "sgi", pGrafico = "L" })" title="Exibir em lista" data-placement="bottom"><i class="fa fa-list icon-sm"></i></a>
+                    </div>
+                </div>
+                <div class='col-xs-5'>
+                    <div class="input-group primary">
+                        <input type="text" name="search" id="search" value="@Html.Value("search")" class="form-control text-right" placeholder="Digite aqui a pesquisa" aria-describedby="basic-addon1">
+                        <a onclick="document.getElementById('formDados').submit();" href="#" class="input-group-addon" id="basic-addon1"><span class="arrow"></span><i class="fa fa-search"></i></a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@** Valida tipo de impressão **@
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.grafico == "L")
+        {
+            @await Component.InvokeAsync("PrintLista")
+        }
+        else if (ViewBag.grafico == "M")
+        {
+            @await Component.InvokeAsync("PrintMetas")
+        }
+        else
+        {
+            @await Component.InvokeAsync("PrintGrafico")
+        }
+    </div>
+</div>
+
+@****Paginação****@
+<div>
+    @*<div aria-live="polite">Exibindo @Model.Indicadores.PageNumber de @Model.Indicadores.PageCount de @Model.Indicadores.TotalItemCount registros</div>*@
+    @Html.Pager((IPager)Model.Indicadores, page => Url.Action("Index", "Home",
+        new
+        {
+            area = "sgi",
+            page = page,
+            search = ViewBag.search,
+            pGrafico = ViewBag.grafico,
+            nPageSize = ViewBag.CurrentItemsPerPage,
+            searchString = ViewBag.CurrentSearch,
+            idNegocio = ViewBag.negAtual,
+            idGrupo = ViewBag.grpAtual,
+            idDepartamento = ViewBag.departamentoAtu,
+            pAno = ViewBag.anoAtual
+        }))
+</div>
+
+@section Styles {
+
+    <link href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/css/PainelGestor/Content/select2.css" rel="stylesheet" />
+    <link href="~/css/PainelGestor/Content/all.css" rel="stylesheet" />
+    <link href="~/css/PainelGestor/Content/jquery-jvectormap-2.0.1.css" rel="stylesheet" />
+}
+
+@section Scripts {
+
+
+    <script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/lib/bootstrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <script src="~/Functions/Script/PainelGestor/select2.js" type="text/javascript"></script>
+    <script src="~/Functions/Script/echarts-custom-for-dashboard.js" type="text/javascript"></script>
+    <script src="~/Functions/Script/SGI/Home/global.js"></script>
+    <script src="~/Functions/Script/SGI/Home/graficos.js"></script>
+
+    <script>
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        ///Retorna se atingiu ou não a meta
+        function AtingiuMeta(valorMeta, valorAtingido,tipo)
+        {
+            var atingiu = false;
+            switch (tipo)
+            {
+                case "0"://Igual
+                    if (valorAtingido == valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "1"://Maior ou igual
+                    if (valorAtingido >= valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "2"://Menor ou igual
+                    if (valorAtingido <= valorMeta)
+                        atingiu = true;
+                    break;
+            }
+
+            return atingiu;
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico Barra
+        //-----------------------------------------------------------------------
+        function PreencheGraficoBarra(titulo,series,un,idItem, legenda)
+        {
+            var item = document.getElementById(idItem);
+            var myChart = echarts.init(item);
+            var option = {
+                tooltip : {
+                    trigger: 'axis'
+                },
+                // Setup grid
+                grid: {
+                    //zlevel: 0,
+                    //x: 50,
+                    //x2: 10,
+                    //y: 50,
+                    //y2: 20
+                },
+                legend: legenda,
+                toolbox: {
+                    show : false,
+                    feature : {
+                        mark : {show: false},
+                        dataView : {show: true, readOnly: false,title: 'Histórico'},
+                        magicType: {show: true, type: ['line', 'bar'],title: 'Gráfico'},
+                        restore : {show: true,title: 'Restaurar'},
+                        saveAsImage : {show: true,title: 'Salvar'}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        data : titulo
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        name : 'Valores',
+                        axisLabel : {
+                            formatter: '{value} '+'%'
+                        },
+                        //min: 0,
+                        //max: 100,
+                        //interval: 10
+                    }
+                ],
+                series: series
+            };
+
+            // Load data into the ECharts instance
+            myChart.setOption(option);
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico semáforo
+        //-----------------------------------------------------------------------
+        function PreencheGraficoSemaforo(titulo,valores,metas,un,idItem,cores,metaAtingida)
+        {
+            $('#semaforo_'+idItem).remove();
+            var html = "";
+            html =  "<div id='semaforo_"+idItem+"'><div class='r4_counter db_box col-xs-12 col-md-12 col-lg-12'>";
+            if(metaAtingida[0] == true)
+            {
+                html += "<i class='pull-left fa badge-success icon-md icon-rounded'></i>";//Verde
+                html += "<i class='pull-left fa badge-warning icon-md icon-rounded' style='background-color: rgba(255, 193, 7, 0.21)'></i>";//Amarelo
+                html += "<i class='pull-left fa badge-danger icon-md icon-rounded' style='background-color: rgba(244, 67, 54, 0.11)'></i>";//Vermelho
+            }
+            else{
+                html += "<i class='pull-left fa badge-success icon-md icon-rounded' style='background-color: rgba(76, 175, 80, 0.17)'></i>";//Verde
+                html += "<i class='pull-left fa badge-warning icon-md icon-rounded' style='background-color: rgba(255, 193, 7, 0.21)'></i>";//Amarelo
+                html += "<i class='pull-left fa badge-danger icon-md icon-rounded'></i>";//Vermelho
+            }
+            html += "<div class='stats'>";
+            html += "</div>";
+            html += "</div>";
+            //$('#'+idItem).append(html);
+
+            html +=  "<div class='col-xs-12 col-md-12 col-lg-12'>";
+            html += "<h4>Valor medido: <strong>"+valores[0]+"</strong></h4>";
+            html += "<span>Meta: "+metas[0]+"</span><br/>";
+            html += "<span>Un: "+un+"</span>";
+            html += "</div>";
+            html += "</div>";
+            $('#'+idItem).append(html);
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico Pizza    **grafico
+        //-----------------------------------------------------------------------
+        function PreencheGraficoPizza(legenda, dados, idItem) {
+            debugger
+            var item = document.getElementById(idItem);
+            var myChart = echarts.init(item);
+            var idx = 1;
+            option = {
+                calculable: true,
+                timeline: {
+                    show: false,
+                    data: legenda.data,
+                    label: {
+                        formatter: function (s) {
+                            return s.slice(0,5);
+                        }
+                    },
+                    x: 10,
+                    y: null,
+                    x2: 10,
+                    y2: 0,
+                    width: 250,
+                    height: 50,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "#eaeaea",
+                    borderWidth: 0,
+                    padding: 50,
+                    controlPosition: "left",
+                    autoPlay: false,
+                    loop: false,
+                },
+                options: [
+                    {
+                        color: ['#363537', '#303F9F', '#1A237E', '#9FA8DA', '#7986CB', '#C5CAE9'],
+                        title: {
+                            text: '',
+                            subtext: ''
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            x: 'right',
+                            data: []
+                            //data: legenda.data
+                        },
+                        //legend: legenda,
+                        toolbox: {
+                            show: false,
+                            color: ['#bdbdbd', '#bdbdbd', '#bdbdbd', '#bdbdbd'],
+                            feature: {
+                                mark: { show: false },
+                                dataView: { show: false, readOnly: true },
+                                magicType: {
+                                    show: true,
+                                    title: 'Pizza/Funil',
+                                    type: ['pie', 'funnel'],
+                                    option: {
+                                        funnel: {
+                                            x: '10%',
+                                            width: '50%',
+                                            funnelAlign: 'center',
+                                            max: 50
+                                        },
+                                        pie: {
+                                            roseType: 'none',
+                                        }
+                                    }
+                                },
+                                restore: { show: false },
+                                saveAsImage: { show: true, title: 'Salvar' }
+                            }
+                        },
+                        series: [
+                            {
+                                name: 'Mês',
+                                type: 'pie',
+                                radius: [20, '50%'],
+                                roseType: 'none',
+                                center: ['50%', '45%'],
+                                width: '50%',       // for funnel
+                                itemStyle: {
+                                    normal: { label: { show: true }, labelLine: { show: true } },
+                                    emphasis: { label: { show: false }, labelLine: { show: false } }
+                                },
+                                data: dados
+                            }
+                        ]
+                    }
+
+                ] // end options object
+            };
+
+            // Load data into the ECharts instance
+             myChart.setOption(option);
+        }
+
+        //-----------------------------------------------------------------------
+        // tabela abertura nfatos n valores  Pizza    **grafico
+        //-----------------------------------------------------------------------
+        function tabelaAberturaMedicoes(dados, idItem) {
+            dados.sort(function (a, b) {
+                //return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+                return a.subDesc < b.subDesc ? -1 : a.subDesc > b.subDesc ? 1 : 0;
+            });
+            var html = '<table style="width:500px; border:1px solid #ccc">';
+            html += '<tbody>';
+
+            html += '<tr>';
+            html += '<td colspan="3" style="border:1px solid #CCC;">';
+            html += '<span><b>' + dados[0].subDesc + '</b></span>';
+            html += '</td>';
+            html += '</tr>';
+
+            var subDimensao = dados[0].subDesc;
+
+            for (i = 0; i < dados.length; i++) {
+                if (subDimensao != dados[i].subDesc) {
+
+                    html += '<tr>';
+                    html += '<td colspan="3" style="border:1px solid #CCC;">';
+                    html += '<span><br></span>';
+                    html += '</td>';
+                    html += '<tr>';
+                    html += '<td colspan="3" style="border:1px solid #CCC;">';
+                    html += '<span><b>' + dados[i].subDesc + '</b></span>';
+                    html += '</td>';
+                    html += '</tr>';
+                }
+
+                html += '<tr>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].name + '</span>';
+                html += '</td>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].value + '</span>';
+                html += '</td>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].percent + '%</span>';
+                html += '</td>';
+                html += '</tr>';
+                subDimensao = dados[i].subDesc;
+            }
+            html += '</tbody>';
+            html += '</table>';
+            $('#t' + idItem).html(html);
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico Linha
+        //-----------------------------------------------------------------------
+        function PreencheGraficoLinha(titulo,valores,metas,un,idItem,cores,metaAtingida)
+        {
+
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Adiciona favoritos
+        //------------------------------------------------------------------------------------------------
+        function AddFavorito(idIndicador)
+        {
+            $.ajax({
+                url: "@Url.Action("AddFavoritos", "Home", new { area = "sgi" })" + "?idIndicador=" + idIndicador,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    if(resultado.status == "incluir")
+                    {
+                        $('#fav_'+idIndicador).removeClass("fa-star-o");
+                        $('#fav_'+idIndicador).removeClass("fa-star");
+                        $('#fav_'+idIndicador).addClass("fa-star");
+                    }else
+                    {
+                        $('#fav_'+idIndicador).removeClass("fa-star-o");
+                        $('#fav_'+idIndicador).removeClass("fa-star");
+                        $('#fav_'+idIndicador).addClass("fa-star-o");
+                    }
+                },
+                error: function () {
+                    alert('erro');
+                }
+            });
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Função para ir no controller
+        //------------------------------------------------------------------------------------------------
+        function AtuDados(idIndicador, anoAtual, dimId, periodo, indGrafico)
+        {
+            $("#divLoading").removeClass("hide");
+            $("#divLoading").removeClass("show");
+            $("#divLoading").addClass("show");
+
+            var dataIni = $('#dataIniGrafico_' + idIndicador).val();
+            var dataFim = $('#dataFimGrafico_' + idIndicador).val();
+
+            $.ajax({
+                url: "@Url.Action("AtuDados", "Home", new { area = "sgi" })" + "?idInd=" + idIndicador +"&ano="+anoAtual,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    AtuDtAtualizacao(idIndicador,anoAtual);
+                    ObtemDados(idIndicador, anoAtual, dimId, periodo, indGrafico, dataIni, dataFim)
+                    $("#divLoading").removeClass("show");
+                    $("#divLoading").addClass("hide");
+                },
+                error: function () {
+                    $("#divLoading").removeClass("show");
+                    $("#divLoading").addClass("hide");
+                }
+            });
+        }
+
+        //---------------------------------------------------
+        // Atualiza ultima data de medição do indicador
+        //---------------------------------------------------
+        function AtuDtAtualizacao(idIndicador,anoAtual)
+        {
+            $.ajax({
+                url: "@Url.Action("GetDtMedicao", "Home", new { area = "sgi" })" + "?idInd=" + idIndicador +"&ano="+anoAtual,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    $("#dtUlt_"+idIndicador).text(resultado.dtMedicao);
+                },
+                error: function () {
+                    alert("erro");
+                }
+            });
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Função para ir no controller obter os valores do banco de dados por indicador e atualizar a tela **grafico
+        //------------------------------------------------------------------------------------------------
+        function ObtemDados(idIndicador, anoAtual, dimensao, periodo, tipoGrafico, dataIni = null, dataFim = null, subDimensao= null)
+        {
+            var cabecalho = [];
+            var valores = [];
+            var metas = [];
+            var cores = [];
+            var acumulado = 0;
+            var mAcumulado = 0;
+            var vlrAnoAnterior = 0;
+            var anoAnterior = "";
+            var metaAnt = 0;
+            var un = '';
+            var cont = 0;
+            var tipoMeta = "";
+            var metaAtingida = [];
+
+            $.ajax({
+                url: "@Url.Action("GetGrafico", "Home", new { area = "sgi" })" + "?idInd=" + idIndicador + "&tipoGrafico=" + tipoGrafico + "&subDime=" + subDimensao +   "&ano="
+                    + anoAtual + "&dimensao=" + dimensao + "&periodo=" + periodo + '&strDataIni='
+                    + (dataIni != null ?    dataIni.replace('/', '-').replace('/', '-') : '') + '&strDataFim=' + (dataFim != null ? dataFim.replace('/', '-').replace('/', '-') : ''),
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    // testa para ver se existe subdimencoes caso sim montaremos a tabela
+                    // ou o grafico de linhas porem nao com periodos em baixo do grafico e sim com as subdimencoes
+                    id = 'bar_' + idIndicador;
+                    $('#t' + id).html("");
+                    $('#' + id).html("");
+
+                    if (resultado.dados.length > 0) {
+                        if (resultado.dados[0].subDesc != null && resultado.dados[0].subDesc.length > 0) {
+                            tabelaAberturaMedicoes(resultado.dados, id);
+                            // concatena legenda quando for
+                            var i = 0;
+                            for (i = 0; i < resultado.dados.length; i++) {
+                                resultado.dados[i].name = resultado.dados[i].name + " - " + resultado.dados[i].subDesc
+                            }
+                        }
+                    }
+
+                    // campo de sub dimensao
+                    document.getElementById('sltSubDimensaoGrafico_' + idIndicador);
+                    var e = document.getElementById('sltSubDimensaoGrafico_' + idIndicador);
+
+                    if (subDimensao == null) {
+                        while (e.length > 0) {
+                            e.options.remove(0);
+                        }
+                    }
+                    if ((resultado.temDimSubId == "T")) {
+                        if (subDimensao == null) {
+                            var opt = document.createElement('option');
+                            opt.value = "";
+                            opt.text = "Todos";
+                            opt.selected = true;
+                            e.options.add(opt);
+
+                            resultado.subDimensao.forEach(function (i) {
+                                var opt = document.createElement('option');
+                                opt.value = i.DimSubId;
+                                opt.text = i.DimSubDescricao;
+                                if (subDimensao == i.DimSubId) {
+                                    opt.selected = true;
+                                }
+                                e.options.add(opt);
+                            });
+                            $('.divSubDimencao_' + idIndicador).show();
+                        }
+                    } else {
+                        $('.divSubDimencao_' + idIndicador).hide();
+                    }
+
+                    $('.divDatas_' + idIndicador).hide();
+
+                    $('.divPeriodo_' + idIndicador).show();
+
+                    if ((tipoGrafico == "3")) {
+                        $('.divDatas_' + idIndicador).show();
+                        $('.divPeriodo_' + idIndicador).hide();
+                    }
+
+                    if ((tipoGrafico != "3") && (periodo.trim() == "D")) {
+                        $('.divDatas_' + idIndicador).show();
+                    }
+
+                    if (tipoGrafico != "3") {
+                        periodo = periodo.trim();
+                        //declaracao variavel
+                        metaAnt = 0;
+                        mesAtu = @DateTime.Now.Month.ToString().PadLeft(2, '0');
+                        anoAtu = @DateTime.Now.Year.ToString();
+                        //Dados formatados para o grafico
+                        var cabecalho = resultado.cabecalho;
+                        var series = [];
+                        resultado.fatos.forEach(function (fato, i) {
+
+                            valores = [];
+                            cores = [];
+                            metaAtingida = [];
+
+                            un = '';
+                            cont = 0;
+                            tipoMeta = "";
+                            //Busca dados ano atual
+                            $.each(fato, function (i, medicao) {
+                                tipoMeta = medicao.tipo;
+                                valores.push(medicao.valor);
+                                //Valida se atingiu a meta ou não e preenche com cor vermelha ou verde
+                                if (AtingiuMeta(medicao.meta, medicao.valor, tipoMeta)) {
+                                    cores.push('#9BCA63');//Atingiu a meta cor verde
+                                    metaAtingida.push(true);
+                                } else {
+                                    cores.push('#F73636');//Não atingiu a meta cor vermelha
+                                    metaAtingida.push(false);
+                                }
+                                un = medicao.un;
+                            });
+                            var type = 'bar';
+                            if (tipoGrafico != '') {
+                                if (tipoGrafico == 2) {
+                                    type = 'line';
+                                }
+                                else if (1) {
+                                    type = 'bar';
+                                }
+                            }
+                            else if (resultado.fatos.length > 1) {
+                                type = 'line';
+                            }
+                            series.push({
+                                name: resultado.legenda[i],
+                                type: type,
+                                data: valores
+                            });
+                        });
+
+                        var legenda = {
+                            orient: 'horizontal',
+                            x: "left",
+                            y: 'bottom',
+                            padding:5,
+                            selectedMode: true,
+                            type: 'scroll',
+                            data: []
+                        };
+
+                        legenda.data = resultado.legenda;
+                        if(cabecalho.length > 0)
+                        {
+                            PreencheGraficoBarra(cabecalho, series, un, id, legenda);
+                        }
+                    }
+
+                    else {
+                        var legenda = {
+                            orient: "horizontal",
+                            x: "left",
+                            y: 'bottom',
+                            selectedMode: true,
+                            type: 'scroll',
+                            data: []
+                        };
+
+                        legenda.data = resultado.legenda;
+                        PreencheGraficoPizza(legenda, resultado.dados, id);
+                    }
+
+                },
+                error: function () {
+
+                }
+            });
+        }
+
+        function atualizarGrafico(tipo, indId,dim_id,per_id) {
+            var dimensao = $('#sltDimensaoGrafico_' + indId).val();
+            var subDimensao = $('#sltSubDimensaoGrafico_' + indId).val();
+            var dataIni = $('#dataIniGrafico_' + indId).val();
+            var dataFim = $('#dataFimGrafico_' + indId).val();
+
+            if (tipo == 3) {
+                ObtemDados(indId, $('#s2id_sltAno').select2('val'), dim_id, per_id, tipo, dataIni, dataFim);
+            }
+            else {
+                ObtemDados(indId, $('#s2id_sltAno').select2('val'), dim_id, per_id, tipo, dataIni, dataFim);
+            }
+        }
+
+    </script>
+
+    @if (ViewBag.grafico == "G")
+    {
+        @foreach (var item in Model.Indicadores)
+        {
+            <script>
+            // inicio scritp
+        $(document).ready(function () {
+
+            //debugger
+
+            @Html.Raw("sltDimensaoGrafico_" +@item.IND_ID+".selectedIndex="+ (@item.DIM_ID-1));
+            @Html.Raw("sltSubDimensaoGrafico_" +@item.IND_ID+".selectedIndex=1");
+            if ("@item.PER_ID.ToString().Trim()" == "D") {
+                @Html.Raw("sltPeriodoGrafico_" + @item.IND_ID+".selectedIndex=0");
+            }
+            else{
+                @Html.Raw("sltPeriodoGrafico_" + @item.IND_ID+".selectedIndex=1");
+            }
+            @Html.Raw("atualizarGrafico("+@item.IND_GRAFICO+","+@item.IND_ID+","+@item.DIM_ID+",'"+@item.PER_ID.ToString().Trim()+"');");
+        });
+            // fim scritp
+            </script>
+        }
+    }
+}
+
+<div id="grafico">
+
+</div>

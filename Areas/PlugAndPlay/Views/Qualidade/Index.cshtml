@@ -1,0 +1,268 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles
+{
+    <style>
+        .pt-3-half {
+            padding-top: 1.4rem;
+        }
+
+        .tabelaEditavel {
+            border: solid 1px;
+            width: 100%
+        }
+
+            .tabelaEditavel td {
+                border: solid 1px;
+            }
+
+            .tabelaEditavel .celulaEmEdicao {
+                padding: 0;
+            }
+
+                .tabelaEditavel .celulaEmEdicao input[type=text] {
+                    width: 100%;
+                    background-color: rgb(255,253,210);
+                }
+
+        table {
+            margin-bottom: 0;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+        }
+
+            th:first-of-type, td:first-of-type {
+                left: 0;
+                position: sticky;
+                background-color: lightgray;
+            }
+
+            th:first-of-type {
+                z-index: 2;
+            }
+
+        td:first-of-type {
+            z-index: 1;
+        }
+
+        th, td p {
+            white-space: nowrap;
+        }
+
+        td p {
+            margin-top: 0;
+        }
+
+            td p:last-child {
+                margin-bottom: 0;
+            }
+
+        th, td {
+            border-bottom: 1px dashed red;
+        }
+
+        .modal {
+            overflow-y: auto
+        }
+
+        .fixo {
+            position: relative;
+            top: 50%;
+            transform: translateY(25%)
+        }
+
+        .nopadding {
+            padding: 0;
+            margin: 0
+        }
+
+        #divselect {
+            height: 34px
+        }
+
+        #sub1 {
+            height: 100%
+        }
+
+        #sub2 {
+            height: 100%
+        }
+
+        #sel1 {
+            height: 100%
+        }
+
+        .selectBox select {
+            width: 100%
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0
+        }
+
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid
+        }
+
+            #checkboxes label {
+                display: block;
+                background-color: #fff
+            }
+
+                #checkboxes label:hover {
+                    background-color: #1e90ff
+                }
+
+        .tabelaEditavel .naoColetado {
+            background-color: red;
+        }
+
+        .tabelaEditavel .statusV {
+            background-color: green;
+        }
+
+        .tabelaEditavel .statusF {
+            background-color: red;
+        }
+    </style>
+    <link href="~/limonte-sweetalert2/sweetalert2.css" rel="stylesheet" />
+}
+@section Scripts
+{
+    <script src="~/limonte-sweetalert2/sweetalert2.js"></script>
+    <script src="~/Functions/Script/Qualidade/ListarTestesRealizados.js"></script>
+    <script src="~/Functions/Script/Qualidade/PlanilhaEditavelTestes.js"></script>
+    <script src="~/Functions/Script/Qualidade/PlanilhaEditavelTestesVisuais.js"></script>
+    <script src="~/Functions/Script/Qualidade/LaudoTesteFisico.js"></script>
+    <script src="~/Functions/Script/Qualidade/ModalInspecoes.js"></script>
+}
+
+<div class="container">
+    <h2>Testes Físicos</h2>
+    <p>Click no Nº do pedido para exibir os Testes Realizados e suas amostras coletadas por OP.</p>
+    <div class="panel-group">
+        <div class="panel-title" style="width:101%; padding-left: 0%; margin-left: 0%;">
+            <div class="panel-body" style="padding-left: 0%; margin-left: 0%;">
+                <nav class="navbar navbar-default">
+                    <div class="#" id="">
+                        <div class="collapse navbar-collapse">
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-xs-3 col-sm-3 fixo">
+                                    <select class="form-control" id="divselect">
+                                        <option value="default" style="color:black;">Selecione o campo</option>
+                                        <option value="ORD_ID">Ord_ID</option>
+                                        <option value="FPR_SEQ_REPETICAO">SEQ_REPETICAO</option>
+                                        <option value="ROT_SEQ_TRANSFORMACAO">SEQ_TRANSFORMACAO</option>
+                                        <option value="ROT_PRO_ID">PRO_ID</option>
+                                        <option value="ROT_MAQ_ID">ROT_MAQ_ID</option>
+                                        <option value="TES_EMISSAO">TES_EMISSAO</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 fixo" id="">
+                                    <select class="form-control" id="divfiltros">
+                                        <option value="parecido com">parecido com</option>
+                                        <option value="igual a">igual a</option>
+                                        <option value="Maior">Maior</option>
+                                        <option value="Menor">Menor</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-xs-3 col-sm-3 fixo" id="">
+                                    <div class="input-group" id="">
+                                        <input type="text" value="" class="form-control" id="sel2" placeholder="Digite a pesquisa">
+                                        <span class="input-group-addon" id="" onclick="">
+                                            <button type="button" class="fa fa-search" id="" onclick="ListarTestesAgrupadosOP()" style="background:transparent;border:none"></button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 fixo" id="">
+                                    <select class="form-control" id="divitens">
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                        <option value="40">40</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+        </div>
+        <div class="panel panel-default" style="display:flex">
+            <!--<!-- OP´s com Testes Físicos Realizados e não Preenchidos -->
+            <div class="panel-heading" id="ListaTestesPorOP" style="width:115%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade col-xs-12 in" id="modalNovasAmostras" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Novas Amostras</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <select id="dados"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="amostras"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSalvar" onclick="salvarAmostra()" class="btn btn-success">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal pra remover amostra de um determinado teste-->
+<div class="modal fade col-xs-12 in" id="modalRemoverAmostra" tabindex="-1" role="dialog" aria-hidden="true">
+
+</div>
+
+<!--modal pra NOVA INSPEÇÃO VISUAL A PARTIR DO MENU QUALIDADE-->
+<div class="modal fade col-xs-12 in" id="modalNovasInspecoes" tabindex="-1" role="dialog" aria-hidden="true" style="height: 500px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Novas Inspeções</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div">
+                        <div id="dadosInspecao"></div>
+                </div>
+                <div></div>
+                <div>
+                    <div id="dialogo"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="window.location.reload();" data-dismiss="modal">Fechar</button>
+                <!--<button type="button" id="btnSalvar" onclick="" class="btn btn-success">Salvar</button>-->
+            </div>
+        </div>
+    </div>
+</div>

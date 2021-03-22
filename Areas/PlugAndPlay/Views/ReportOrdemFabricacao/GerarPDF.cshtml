@@ -1,0 +1,423 @@
+﻿
+@{
+    Layout = null;
+
+    dynamic dadosPedido = ViewData["dadosPedido"] as System.Dynamic.ExpandoObject;
+    dynamic dadosOnduladeira = ViewData["dadosOnduladeira"] as System.Dynamic.ExpandoObject;
+    dynamic dadosConversao = ViewData["dadosConversao"] as System.Dynamic.ExpandoObject;
+    dynamic roteiro = ViewData["roteiro"] as System.Collections.Generic.List<System.Dynamic.ExpandoObject>;
+    dynamic dadosPaletizacao = ViewData["dadosPaletizacao"] as System.Dynamic.ExpandoObject;
+    dynamic dadosExpedicao = ViewData["dadosExpedicao"] as System.Dynamic.ExpandoObject;
+    dynamic imgLastro = ViewData["imgLastro"] as System.Dynamic.ExpandoObject;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Relatório Ordem de Produção</title>
+    <style>
+
+        body {
+            font-family: Calibri;
+            font-size: 18px;
+        }
+
+        .div_title {
+            width: 100%;
+            border-top: solid;
+            border-bottom: solid;
+            border-width: 1px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        .div_content {
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .content_left {
+            position: absolute;
+            left: 0%;
+        }
+
+        .content_center {
+            position: absolute;
+            left: 30%;
+        }
+
+        .content_right {
+            position: absolute;
+            left: 60%;
+        }
+
+        .marcatexto {
+            background: #FFF950;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <!-- Begin Cabecalho -->
+    <section>
+        <table width="100%">
+            <tr>
+                <td align="left" width="300">
+                    <div><img src="~/images/logo/logo.jpg" width="300" height="100" /></div> <!-- Logo do Cliente -->
+                </td>
+                <td align="center">
+                    <div><p style="font-size:22px; font-weight: bold;">Ordem de Produção</p></div>
+                </td>
+                <td align="right">
+                    <div><p>@DateTime.Now</p></div>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <br />
+    <br />
+    <!-- End Cabecalho -->
+    <!-- Begin Dados Do Pedido -->
+    <section style="font-size:12px">
+        <div class="div_title" style="margin-top: 0px;">
+            <span>DADOS DO PEDIDO</span>
+        </div>
+        <div class="div_content" style="margin-top: 10px;">
+            <span class="content_left">Cliente: @dadosPedido.clienteId - @dadosPedido.clienteNome</span>
+        </div>
+        <br />
+        <div class="div_content" style="margin-top: 15px;">
+            <span class="content_left">Quantidade a Produzir: @dadosPedido.qtdProduzir</span>
+            @if (dadosPedido.pecasPorConjunto != null && dadosPedido.pecasPorConjunto > 0)
+            {
+                <span class="content_center">Peças por Conjunto: @dadosPedido.pecasPorConjunto</span>
+                <span class="content_right">Quantidade de Conjuntos: @dadosPedido.qtdConjunto</span>
+            }
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Produto: @dadosPedido.ft</span>
+            <span class="content_right">Pedido: @dadosPedido.pedido</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Descrição: @dadosPedido.referencia</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Data de Entrega: De @dadosPedido.dataEntregaDe - Até @dadosPedido.dataEntregaAte</span>
+            <span class="content_right">Tolerância: -@dadosPedido.toleranciaMenos%&nbsp;&nbsp;&nbsp;+@dadosPedido.toleranciaMais%</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Local da Entrega: @dadosPedido.localEntrega</span>
+            <span class="content_right">@dadosPedido.municipio - @dadosPedido.uf</span>
+        </div>
+        @foreach (dynamic item in dadosPedido.observacoes)
+        {
+            <br />
+            <div class="div_content">
+                <span class="content_left">Observações: @item.OBS_DESCRICAO</span>
+            </div>
+        }
+
+    </section>
+    <!-- End Dados Do Pedido -->
+    <!-- Begin Dados de Onduladeira -->
+    <section style="font-size:12px">
+        <div class="div_title">
+            <span>DADOS DE ONDULADEIRA</span>
+        </div>
+        <div class="div_content" style="margin-top: 10px;">
+            <span class="content_left">Cod Chapa: @dadosOnduladeira.codChapa</span>
+            <span class="content_center">Área Unitária: @dadosOnduladeira.areaUnitaria m2</span>
+            <span class="content_right">Área Total: @dadosOnduladeira.areaTotal m2</span>
+
+        </div>
+        <br />
+        <div class="div_content" style="margin-top: 10px;">
+            <span class="content_left">Tipo Papelão: @dadosOnduladeira.descricaoChapa</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Medidas (L x C): @dadosOnduladeira.larguraChapa x @dadosOnduladeira.comprimentoChapa</span>
+            <span class="content_center">Quantidade de Chapas: @dadosOnduladeira.qtdChapa</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Vincos na Onduladeira: @dadosOnduladeira.vincosOnduladeira</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Endereço: @dadosOnduladeira.endereco</span>
+        </div>
+        @foreach (dynamic item in dadosOnduladeira.observacoes)
+        {
+            <br />
+            <div class="div_content">
+                <span class="content_left">Observações: @item.OBS_DESCRICAO</span>
+            </div>
+        }
+    </section>
+    <!-- End Dados de Onduladeira -->
+    <!-- Begin Roteiro -->
+    <section style="font-size:12px">
+        <div class="div_title" style="margin-bottom: 10px;">
+            <span>ROTEIRO</span>
+        </div>
+
+        <table width="100%" style="">
+            <thead>
+                <tr align="left" style="">
+                    <th>Máquina</th>
+                    <th>Seq. Transf.</th>
+                    <th>Seq. Rep.</th>
+                    <th>Início Previsto</th>
+                    <th>Fim Previsto</th>
+                    <th>Pulsos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in roteiro)
+                {
+                    @if (item.maquinaAtual)
+                    {
+                        <tr style="font-weight: bold;background-color: lightgray">
+                            <td> >> @item.maquina</td>
+                            <td>@item.seqTransformacao</td>
+                            <td>@item.seqRepeticao</td>
+                            <td>@item.inicioPrevisto</td>
+                            <td>@item.fimPrevisto</td>
+                            <td>@item.qtdPulsos</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>@item.maquina</td>
+                            <td>@item.seqTransformacao</td>
+                            <td>@item.seqRepeticao</td>
+                            <td>@item.inicioPrevisto</td>
+                            <td>@item.fimPrevisto</td>
+                            <td>@item.qtdPulsos</td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>
+    </section>
+    <!-- End Roteiro -->
+    <!-- Begin Dados de Conversão -->
+    <section style="font-size:12px">
+        <div class="div_title">
+            <span>DADOS DE CONVERSÃO</span>
+        </div>
+        <div class="div_content" style="margin-top: 10px;">
+            <table>
+                <tbody>
+                    <tr align="left" style="">
+                        <td>
+                            @if (dadosConversao.comprimentoCaixaInterna == null || dadosConversao.larguraCaixaInterna == null ||
+                               dadosConversao.alturaCaixaInterna == null)
+                            {
+                                <span>
+                                    Medidas Internas (C x L x A):
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    Medidas Internas (C x L x A): @dadosConversao.comprimentoCaixaInterna x
+                                    @dadosConversao.larguraCaixaInterna x @dadosConversao.alturaCaixaInterna
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span>Cliche: @dadosConversao.codCliche</span>
+                        </td>
+                        <td>
+                            <span>Faca: @dadosConversao.codFaca</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="div_content">
+            <span class="content_left">Desenho: @dadosConversao.codDesenho</span>
+            <span class="content_center">Cores: @dadosConversao.cores</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Fechamento: @dadosConversao.fechamento</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Tipo Lap: @dadosConversao.tipoLap</span>
+            <span class="content_center">Tamanho Lap: @dadosConversao.tamanhoLap</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Lap Prolongado: @dadosConversao.lapProlongado</span>
+            <span class="content_center">Tamanho Lap Prolongado: @dadosConversao.tamanhoLapProlongado</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Arranjo (L x C): @dadosConversao.arranjoLargura x @dadosConversao.arranjoComprimento</span>
+            <span class="content_center">Fitilhos (L x C): @dadosConversao.fitilhosFardoLargura x @dadosConversao.fitilhosFardoComprimento</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Quantidade de Amarrados: @dadosConversao.qtdAmarrados</span>
+            <span class="content_center">Quantidade por Amarrado: @dadosConversao.qtdPorAmarrado</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Medidas (L x C): @dadosConversao.medidas</span>
+        </div>
+        <br />
+        <div class="div_content">
+            <span class="content_left">Área Unitária: @dadosConversao.areaUnitaria m2</span>
+        </div>
+
+        @foreach (dynamic item in dadosConversao.observacoes)
+        {
+            <br />
+            <div class="div_content">
+                <span class="content_left">Observações: @item.OBS_DESCRICAO</span>
+            </div>
+        }
+    </section>
+    <!-- End Dados de Conversão -->
+    <!-- Begin Dados de Paletização -->
+    <section style="font-size:12px">
+        <div class="div_title">
+            <span class="">DADOS DE PALETIZAÇÃO</span>
+        </div>
+        <div class="div_content">
+            <span class="content_left">Medidas (EMBA) (L x C): @dadosPaletizacao.medidasEmba</span>
+        </div>
+        <br />
+        @if (dadosPaletizacao.paletizado == false)
+        {
+            <div class="div_content" style="margin-top: 10px;">
+                <span class="content_left">NÃO PALETIZADO</span>
+            </div>
+        }
+        else
+        {
+            <div class="div_content" style="margin-top: 10px;">
+                <span class="content_left">Paletizado com: @dadosPaletizacao.paletizadoCom</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left">Palete: @dadosPaletizacao.codPalete - @dadosPaletizacao.descricaoPalete</span>
+                <span class="content_right">Qtd: @dadosPaletizacao.qtdPalete</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left">Medidas do Palete (L x C): @dadosPaletizacao.larguraPalete x @dadosPaletizacao.comprimentoPalete</span>
+                <span class="content_center">Fitas no Palete (L x C): @dadosPaletizacao.qtdFitilhosLarg x @dadosPaletizacao.qtdFitilhosComp</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left">Peças por Palete: @dadosPaletizacao.pecasPorPalete</span>
+                <span class="content_center marcatexto">Lastro x Altura: </span>
+            </div>
+            @if (dadosPaletizacao.tampo == false)
+            {
+                <br />
+                <div class="div_content">
+                    <span class="content_left">Tampo: NÃO UTILIZADO</span>
+                </div>
+            }
+            else
+            {
+                <br />
+                <div class="div_content">
+                    <span class="content_left">Tampo: @dadosPaletizacao.codTampo - @dadosPaletizacao.descricaoTampo</span>
+                    <span class="content_right">Qtd: @dadosPaletizacao.qtdTampo</span>
+                </div>
+                <br />
+                <div class="div_content">
+                    <span class="content_left">Medidas do Tampo (L x C): @dadosPaletizacao.larguraTampo x @dadosPaletizacao.comprimentoTampo</span>
+                </div>
+            }
+
+            @foreach (dynamic item in dadosPaletizacao.observacoes)
+            {
+                <br />
+                <div class="div_content">
+                    <span class="content_left">Observações: @item.OBS_DESCRICAO</span>
+                </div>
+            }
+        }
+
+    </section>
+    <!-- End Dados de Paletização -->
+    <!-- Begin Dados para Expedição -->
+    <section style="font-size:12px">
+        <div class="div_title">
+            <span class="">DADOS DE EXPEDIÇÃO</span>
+        </div>
+        @if (dadosExpedicao.observacoes.Count == 0)
+        {
+            <br />
+            <div class="div_content">
+                <span class="content_left">Não há observações</span>
+            </div>
+        }
+        else
+        {
+            @foreach (dynamic item in dadosExpedicao.observacoes)
+            {
+                <br />
+                <div class="div_content">
+                    <span class="content_left">Observações: @item.OBS_DESCRICAO</span>
+                </div>
+            }
+        }
+    </section>
+    <!-- End Dados para Expedição -->
+
+    <section style="font-size:12px">
+        <div class="div_title">
+            <span class="">LASTROS</span>
+        </div>
+
+        <table width="100%">
+            <tr>
+
+                <td align="left" width="30%">
+                   
+                </td>
+
+                <td align="center" width="30%">
+                </td>
+
+                <td align="center">
+                    <p>@imgLastro.nome</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td align="left" width="30%">
+                </td>
+                
+                <td align="center" width="30%">
+                </td>
+
+                <td align="center">
+                    <div><img src="~/images/lastros/@(imgLastro.path)" width="200" /></div>
+                </td>
+            </tr>
+
+        </table>
+    </section>
+
+</body>
+</html>

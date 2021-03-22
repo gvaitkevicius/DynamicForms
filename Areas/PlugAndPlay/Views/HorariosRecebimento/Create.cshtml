@@ -1,0 +1,221 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.T_HORARIO_RECEBIMENTO
+
+@{
+    ViewBag.Title = "Horários de Recebimento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <link href="~/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+}
+@section Scripts{
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script src="~/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '#btnAddHorario', ApApp.clickTrMap);
+        });
+
+        $(function () {
+            $('#datetimepicker1').datetimepicker({
+                format: 'LT'
+            });
+        });
+        $(function () {
+            $('#datetimepicker2').datetimepicker({
+                format: 'LT'
+            });
+        });
+        $(function () {
+            $('#datetimepicker3').datetimepicker({
+                format: 'LT'
+            });
+        });
+        $(function () {
+            $('#datetimepicker4').datetimepicker({
+                format: 'LT'
+            });
+        });
+
+        var ApApp = {
+            clickTrMap: function () {
+                var tr = $(this);
+                var frm = $('#frmHorarios');
+                frm.submit();
+                var tr = $(this);
+                tr.attr('disabled', 'disabled');
+            }
+        };
+    </script>
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmHorarios" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        @Html.HiddenFor(model => model.HRE_DIA_DA_SEMANA,
+                    new { id= "diaSemana", Value = @ViewBag.diaSemana})
+        @Html.HiddenFor(model => model.HRE_HORA_INICIAL,
+                    new { id= "horaInicio", Value = @ViewBag.horaInicio})
+        @Html.HiddenFor(model => model.HRE_HORA_FINAL,
+                    new { id= "horaFim", Value = @ViewBag.horaFim})
+        <br />
+        <br />
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CLI_ID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
+                <input type="text" id="CLI_ID" name="CLI_ID" class="form-control" , value="@ViewBag.IdCliente">
+                @Html.ValidationMessageFor(model => model.CLI_ID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="form-check control-label col-lg-8 ">
+                @Html.CheckBox("Domingo")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Domingo">Domingo</label>
+                @Html.CheckBox("Segunda")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Segunda">Segunda Feira</label>
+                @Html.CheckBox("Terca")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Terca">Terça Feira</label>
+                @Html.CheckBox("Quarta")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Quarta">Quarta Feira</label>
+                @Html.CheckBox("Quinta")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Quinta">Quinta Feira</label>
+                @Html.CheckBox("Sexta")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Sexta">Sexta Feira</label>
+                @Html.CheckBox("Sabado")
+                <span class="checkmark"></span>
+                <label class="form-check-label" for="Sabado">Sabado</label>
+                
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="form-group">
+                <label for="horaUm" class="control-label col-md-2">Hora Inicial(1):</label>
+                <div class='col-sm-3'>
+                    <div class="form-group">
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input type='text' id="horaUm" name="horaUm" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="horaDois" class="control-label col-md-2">Hora Final(1):</label>
+                    <div class='col-sm-3'>
+                        <div class="form-group">
+                            <div class='input-group date' id='datetimepicker2'>
+                                <input type='text' id="horaDois" name="horaDois" class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="horaTres" class="control-label col-md-2">Hora Inicial(2):</label>
+                    <div class='col-sm-3'>
+                        <div class="form-group">
+                            <div class='input-group date' id='datetimepicker3'>
+                                <input type='text' id="horaTres" name="horaTres" class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="horaQuatro" class="control-label col-md-2">Hora Final(2):</label>
+                        <div class='col-sm-3'>
+                            <div class="form-group">
+                                <div class='input-group date' id='datetimepicker4'>
+                                    <input type='text' id="horaQuatro" name="horaQuatro" class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-time"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <a href="@Url.Action("Index","HorariosRecebimento")" class="btn btn-info" title="Voltar" rel="tooltip"><span class="fa fa-arrow-circle-left"></span></a>
+                    <input type="button" value="Adicionar novo Horário" id="btnAddHorario" class="btn btn-success" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="col-xs-12 " id="horarios">
+    <section class="box " style=" position:relative " id="">
+        <header class="panel_header">
+            <h2 class="title">HORÁRIOS DE RECEBIMENTO</h2>
+        </header>
+        <div class="content-body">
+            <table class="table">
+                <tr>
+                    <td>
+                        DIA DA SEMANA
+                    </td>
+                    <td>
+                        HORA INICIAL
+                    </td>
+                    <td>
+                        HORA FINAL
+                    </td>
+
+                    <td></td>
+                </tr>
+                @foreach (var item in ViewBag.Horarios)
+                {
+                    <tr>
+                        <td>
+                            @item.HRE_DIA_DA_SEMANA
+                        </td>
+                        <td>
+                            @item.HRE_HORA_INICIAL.ToString("hh:mm")
+                        </td>
+                        <td>
+                            @item.HRE_HORA_FINAL.ToString("hh:mm")
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit", new {id = item.HRE_ID  })" class="btn btn-warning" title="Editar" rel="tooltip"><span class="fa fa-edit"></span></a>
+                            <a href="@Url.Action("Details", new {id = item.HRE_ID  })" class="btn btn-info" title="Visualizar" rel="tooltip"><span class="fa fa-eye"></span></a>
+                            <a href="@Url.Action("Delete", new { id = item.HRE_ID  })" class="btn btn-danger" title="Remover" rel="tooltip"><span class="fa fa-eraser"></span></a>
+                        </td>
+
+                    </tr>
+                }
+            </table>
+        </div>
+    </section>
+</div>

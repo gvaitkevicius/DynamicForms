@@ -1,0 +1,245 @@
+﻿@using DynamicForms.Areas.PlugAndPlay.Models
+@using DynamicForms.Util
+@{
+    ViewBag.Title = "Consulta Dicionario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+
+    <style>
+
+        .w-100 {
+            width: 100%;
+        }
+
+        .w-85 {
+            width: 85%;
+        }
+
+        .mt-5 {
+            margin-top: 25px;
+        }
+
+        .mb-5 {
+            margin-bottom: 25px;
+        }
+
+        .border-1 {
+        }
+
+        .sql-view {
+            background-color: #C4FFFF;
+            padding: 12px;
+            border: 1px solid gray;
+            color: blue;
+            border-radius: 6px;
+            word-wrap: break-word;
+        }
+
+        .Listas {
+            width: 100%;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .listEnt {
+            margin-left: 15px;
+            width: 26%;
+            float: left;
+        }
+
+        .listSel {
+            margin-left: 26px;
+            width: 26%;
+            float: left;
+        }
+
+        .listColum {
+            margin-left: 26px;
+            width: 26%;
+            float: left;
+        }
+
+        .pt-3-half {
+            padding-top: 1.4rem;
+        }
+
+
+        table {
+            margin-bottom: 0;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+        }
+
+            th:first-of-type, td:first-of-type {
+                left: 0;
+                position: sticky;
+                background-color: lightgray;
+            }
+
+            th:first-of-type {
+                z-index: 2;
+            }
+
+        td:first-of-type {
+            z-index: 1;
+        }
+
+        th, td p {
+            white-space: nowrap;
+        }
+
+        td p {
+            margin-top: 0;
+        }
+
+            td p:last-child {
+                margin-bottom: 0;
+            }
+
+        th, td {
+            border-bottom: 1px dashed red;
+        }
+
+        .modal {
+            overflow-y: auto
+        }
+
+        .fixo {
+            position: relative;
+            top: 50%;
+            transform: translateY(25%)
+        }
+
+        .nopadding {
+            padding: 0;
+            margin: 0
+        }
+
+        #divselect {
+            height: 34px
+        }
+
+        #sub1 {
+            height: 100%
+        }
+
+        #sub2 {
+            height: 100%
+        }
+
+        #sel1 {
+            height: 100%
+        }
+
+        .selectBox select {
+            width: 100%
+        }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0
+        }
+    </style>
+    <link href="~/limonte-sweetalert2/sweetalert2.css" rel="stylesheet" />
+}
+
+
+
+
+<script>
+    localStorage.clear(); //limpo o local storage
+
+</script>
+
+
+<div class="col-lg-12">
+  <section class="box">
+    <a onclick="voltarTopo()" id="backtop"></a>
+     <header class="panel_header" id="">
+       <h1 class="title">@ViewData["Title"]</h1>
+     </header>
+
+  <div class="" id="bodyDadosPesquisado">
+    <div class="panel-body">
+       <div class="row">
+          <div class="col-xs-12">
+             <div class="dataTables_wrapper form-inline no-footer" id="example2_wrapper">
+                <div class="panel-body">
+                   <div>
+                     <ul class="nav nav-tabs form0">
+                       <li class="active"></li>
+                     </ul>
+
+                     <div class="tab-content" style="display:flex; flex-direction:row; flex-flow:wrap; justify-content: space-between;">
+                         <div class="container" style="padding-left: 0%; margin-left: 0%;">
+                             <div class="panel-group">
+                                 <div class="panel-title" style="width:101%; padding-left: 0%; margin-left: 0%;">
+                          
+                                         <nav id="painelParametros" class="navbar navbar-default">
+                                             
+                                         </nav>
+                                     
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+
+                       <div style="margin-top:15px">
+                           <button type="submit" class="btn btn-warning " style="margin-right: 10px; padding: 9px; border-radius: 5px;" id="" onClick="refreshPage()"><i class="fa fa-eraser" style="padding-right: 7px;"></i>LIMPAR CAMPOS</button>
+                           <button asp-action="ConsultaDicionario" type="submit" class="btn btn-primary" style="padding: 9px; border-radius: 5px;" id="" onclick="executarConsulta()"><i class="fa fa-play" style="padding-right: 7px;"></i>EXECUTAR CONSULTA</button>
+                       </div>
+
+                       <div class="row sql-view mt-5 mb-5" id="TextSQL">
+
+                       </div>
+
+
+                       <div class="Listas">
+                            <div class="listEnt">
+                                @{
+                                     Dictionary Dicionario = Dictionary.GetInstance();
+                                     <select id="listE" class="flot-demo-container" multiple size="20">
+                                       @for (int i = 0; i < Dicionario.ActualEntities.Count(); i++)
+                                       {
+                                         <option value="@Dicionario.ActualEntities[i].Name" onclick="listarColunas('@Dicionario.ActualEntities[i].Name'); listarRelacoes('@Dicionario.ActualEntities[i].Name')"> @Dicionario.ActualEntities[i].Name</option>
+                                       }
+                                     </select>
+                               }
+                            </div>
+
+                         <div class="listColum">
+                                <select id="listC" class="flot-demo-container" multiple size="10"></select>
+                         </div>
+                         <div class="listSel">
+                            <select id="listS" class="flot-demo-container" multiple size="15"></select>
+                         </div>
+                       </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+  </div>
+
+  </section>
+</div>
+
+
+@section Scripts {
+ <script src="~/Functions/Script/Dicionario/IniciarConsulta.js"></script>
+}
+
+
+
+
+
+

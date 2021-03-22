@@ -1,0 +1,107 @@
+﻿@model IEnumerable<DynamicForms.Areas.PlugAndPlay.Models.ClpMedicoes>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.MaquinaId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataInicio)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataFim)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantidade)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Grupo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TurnoId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TurmaId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OcorrenciaId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IdLoteClp)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fase)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Emissao)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ClpOrigem)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaquinaId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataInicio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataFim)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantidade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grupo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TurnoId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TurmaId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OcorrenciaId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdLoteClp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fase)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Emissao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClpOrigem)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>

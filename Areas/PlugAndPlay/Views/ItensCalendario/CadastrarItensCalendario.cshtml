@@ -1,0 +1,282 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.ItensCalendario
+
+@{
+    ViewBag.Title = "Calendário de Máquina";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="~/Functions/Script/ItensCalendario/itens-calendario.js"></script>
+}
+@section styles{
+    <link href="~/css/animate.css" rel="stylesheet" />
+    <link href="~/css/ItensCalendario/itens-calendario.css" rel="stylesheet" />
+    <style>
+    </style>
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Calendario")">Itens Calendario de Máquina </a>
+                </li>
+                <li class="active">
+                    <strong>Cliente</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCalendario" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <input type="hidden" id="ItensCalendario" name="ItensCalendario" value="">
+        <section class="box col-xs-12">
+            <br />
+            <div class="col-xs-12 " id="identificacao">
+                <section class="box " style=" position:relative " id="">
+                    <header class="panel_header">
+                        <h4 class="title"><strong>Definições do calendário:</strong></h4>
+                    </header>
+                    <div class="content-body">
+                        <div class="form-group">
+
+                            <label for="Dataini" class="control-label col-md-2">Data inicio calendário:</label>
+                            <div class="col-md-4">
+                                <input id="DataIni" name="DataIni" type="date" class="form-control datepicker" data-format="dd/mm/yyyy">
+                            </div>
+                            <label for="DataFim" class="control-label col-md-2">Data fim calendário:</label>
+                            <div class="col-md-4">
+                                <input id="DataFim" name="DataFim" type="date" class="form-control datepicker" data-format="dd/mm/yyyy">
+                            </div>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="preset" id="periodoNormal" value="0" checked="true">
+                            <label class="form-check-label" for="periodoNormal">Período Normal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="preset" id="feriados" value="1">
+                            <label class="form-check-label" for="feriados">Feriados</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="preset" id="manutencao" value="2">
+                            <label class="form-check-label" for="manutencao">Manutenção</label>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-sm-12 " id="descricao">
+                <section class="box" style=" position:relative " id="">
+                    <header class="panel_header">
+                        <h2 class="title"><strong>Informações de Dias e Horários do Calendário:</strong></h2>
+                    </header>
+                    <div class="content-body">
+                        <div class="form-group">
+                            <div width:100%; position:relative" class="table-responsive" border="1" cellspacing="1">
+                                <table id="TbCalendario" class="table table-bordered">
+                                    <thead>
+                                        <tr id="colCab">
+                                            <th>Dom</th>
+                                            <th>Seg</th>
+                                            <th>Ter</th>
+                                            <th>Qua</th>
+                                            <th>Qui</th>
+                                            <th>Sex</th>
+                                            <th>Sab</th>
+                                            <th>Hora de Início</th>
+                                            <th>Hora de Termino</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="rowMaquinas" class="row">
+
+                <div class="col-sm-5">
+                    <section class="box" style="position: relative">
+                        <header class="panel_header">
+                            <h2 class="title">Máquinas</h2>
+                        </header>
+
+                        <div class="content-body">
+                            <div class="form-group">
+                                <div style="width:100%;position:relative" class="table-responsive" border="1" cellspacing="1">
+                                    <table id="tbMaquinas" class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="col col-sm-3">ID da Máquina</th>
+                                                <th class="col col-sm-1">ID do Calendário</th>
+                                                <th class="col col-sm-1">Descrição</th>
+                                                <th class="col col-sm-1">Aplicar á: </th>
+                                                <th class="col col-sm-1">Mostrar Horários</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+
+                <div class="col-sm-7">
+                    <section class="box" style="position: relative">
+                        <header class="panel_header">
+                            <h2 class="title">Horários da Máquina</h2>
+                        </header>
+
+                        <div class="content-body">
+                            <div class="form-group">
+                                <div style="width:100%; max-height: 900px; position:relative" class="table-responsive" border="1" cellspacing="1">
+                                    <table id="tbHorariosMaquinas" class="table tableFixHead table-sm table-bordered">
+                                        <thead>
+                                            <tr id="colCab">
+                                                <th>Dom</th>
+                                                <th>Seg</th>
+                                                <th>Ter</th>
+                                                <th>Qua</th>
+                                                <th>Qui</th>
+                                                <th>Sex</th>
+                                                <th>Sab</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabBodyHorariosMaquina">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+
+            <div id="rowEquipes" class="row">
+
+                <div class="col-sm-5">
+                    <section class="box" style="position: relative">
+                        <header class="panel_header">
+                            <h2 class="title">Equipes</h2>
+                        </header>
+
+                        <div class="content-body">
+                            <div class="form-group">
+                                <div style="width:100%;position:relative" class="table-responsive" border="1" cellspacing="1">
+                                    <table id="tbEquipes" class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="col col-sm-3">ID da Equipe</th>
+                                                <th class="col col-sm-1">ID do Calendário</th>
+                                                <th class="col col-sm-1">Aplicar á: </th>
+                                                <th class="col col-sm-1">Mostrar Horários</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+
+                <div class="col-sm-7">
+                    <section class="box" style="position: relative">
+                        <header class="panel_header">
+                            <h2 class="title">Horários da Equipe</h2>
+                        </header>
+
+                        <div class="content-body">
+                            <div class="form-group">
+                                <div style="width:100%; max-height: 900px; position:relative" class="table-responsive" border="1" cellspacing="1">
+                                    <table id="tbHorariosEquipes" class="table tableFixHead table-sm table-bordered">
+                                        <thead>
+                                            <tr id="colCab">
+                                                <th>Dom</th>
+                                                <th>Seg</th>
+                                                <th>Ter</th>
+                                                <th>Qua</th>
+                                                <th>Qui</th>
+                                                <th>Sex</th>
+                                                <th>Sab</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                                <th>Hora de Início</th>
+                                                <th>Hora de Termino</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabBodyHorariosEquipe">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+
+            <div class="col-xs-12 " id="horario">
+                <section class="box " style=" position:relative " id="">
+                    <header class="panel_header"></header>
+                    <div class="content-body">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <input type="button" value="Gerar calendário" id="btnGerar" class="btn btn-success" />
+                                <a href="@Url.Action("Index","Calendario")" class="btn btn-info" title="Voltar" data-toggle="tooltip" data-placement="bottom"><span class="fa fa-arrow-circle-left"></span></a>
+                                <div id="itensLoad">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <br />
+            <br />
+
+            <br />
+        </section>
+    </div>
+}

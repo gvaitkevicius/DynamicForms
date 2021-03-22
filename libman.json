@@ -1,0 +1,65 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "unpkg",
+      "library": "bootstrap@3.3.1",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery-validation@1.19.2",
+      "destination": "wwwroot/lib/jquery-validation/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery@3.3.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.9",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "moment.js@2.20.1",
+      "destination": "wwwroot/lib/moment.js/",
+      "files": [
+        "moment.min.js",
+        "moment-with-locales.js",
+        "moment-with-locales.min.js",
+        "moment.js",
+        "locale/en-ie.js",
+        "locale/en-gb.js",
+        "locale/en-ca.js",
+        "locale/en-au.js",
+        "locale/en-nz.js",
+        "locale/es.js",
+        "locale/pt-br.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "leaflet-routing-machine@3.2.12",
+      "destination": "wwwroot/lib/leaflet-routing-machine/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "leaflet@1.6.0",
+      "destination": "wwwroot/lib/leaflet/"
+    },
+    {
+      "library": "jquery-ajax-unobtrusive@3.2.6",
+      "destination": "wwwroot/lib/jquery-ajax-unobtrusive/"
+    },
+    {
+      "library": "limonte-sweetalert2@8.11.8",
+      "destination": "wwwroot/limonte-sweetalert2/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery-mask-plugin@1.14.16",
+      "destination": "wwwroot/jquery-mask-plugin/"
+    }
+  ]
+}

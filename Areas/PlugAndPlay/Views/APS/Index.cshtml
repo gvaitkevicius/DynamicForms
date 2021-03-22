@@ -1,0 +1,1223 @@
+﻿@using DynamicForms.Areas.PlugAndPlay.Models
+
+@{
+    ViewBag.Title = "APS - Sistema Avançado de Planejamento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles{
+    <!--control carregando-->
+    <link href="~/css/control-carregando.css" rel="stylesheet" />
+    <!--data table-->
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+    <!--datetimepicker-->
+    <link href="~/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <!--bootstrap modal create-->
+    <link href="~/css/bootstrap-modal-create.css" rel="stylesheet" />
+
+    <!-- bootstrap datetimerpicker-->
+    <link href="~/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <!-- INSERE O CSS -->
+    <link href="~/css/GlobalCss.css" rel="stylesheet" />
+    <link href="~/css/dynamiccss.css" rel="stylesheet" />
+    <link href="~/css/barra_otimizador_interface.css" rel="stylesheet" />
+    <style>
+    </style>
+
+}
+@section scripts{
+
+    <script src="~/Functions/Script/three-min.js"></script>
+    <script src="~/Functions/Script/orbit-controls.js"></script>
+    <script src="~/Functions/Script/container-packing.js"></script>
+
+    <script src="~/Functions/Script/jqueryUi.js"></script>
+    <!--clipboard.js-->
+    <script src="~/Functions/Script/Clipboard/clipboard.min.js"></script>
+    <!--data table-->
+    <script src="~/Functions/Script/datatables.min.js"></script>
+    <!--jquery componentes-->
+    <script src="~/Functions/Script/jquey-componentes.js"></script>
+    <!--moment.js-->
+    <script src="~/Functions/Script/moment.js"></script>
+    <script src="~/Functions/Script/pt-br.js"></script>
+    <!--datetimepicker-->
+    <script src="~/Functions/Script/bootstrap-datetimepicker.min.js"></script>
+    <!--jquery validation-->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/Functions/Script/messages_pt_BR.js"></script>
+    <script src="~/Functions/Script/default-tooltip-message.js"></script>
+    <!--bootstrap modal create-->
+    <script src="~/Functions/Script/bootstrap-modal-create.js"></script>
+    <!--scripts da pagina-->
+    <!--DynamicJS-->
+    <script src="~/Functions/Script/DynamicForm.js"></script>
+    <script src="~/Functions/Script/cadastro.js"></script>
+    <script src="~/Functions/Script/validacao-formulario.js"></script>
+    <script src="~/Functions/Script/data-table-conf.js"></script>
+    <script src="~/Functions/Script/modal-alterar-fila.js"></script>
+    <script src="~/Functions/Script/tabela-fila-producao.js"></script>
+
+    <script src="~/Functions/Script/Onduladeira/Onduladeira.js"></script>
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/Functions/Script/Mapas/Mapa.js"></script>
+    <script src="~/Functions/Script/Residuos/GerenciarResiduos.js"></script>
+    <script src="~/Functions/Script/AvaliarCarga/AvaliarCarga.js"></script>
+    <!--
+       <script src="~/Functions/Script/global.js"></script>
+    -->
+    <script src="~/Functions/Script/modal-alterar-dados-carga.js"></script>
+    <script src="~/Functions/Script/UnirCargas/modal-unir-cargas.js"></script>
+    <!--SCRIPT QUE FAZ A FILA DE PRODUCAO FICAR ORDENAVEL-->
+    <script src="~/Functions/Script/VisualizacaoDaFilaDeProducao.js"></script>
+    <!-- SCRIPT PARA GERAR O RELATÓRIO DO PLANO DE CARGA -->
+    <script src="~/Functions/Script/ReportPlanoCarga/ReportPlanoCarga.js"></script>
+    <!-- SCRIPT PARA GERAR RESUMOS DE ESTOQUES -->
+    <script src="~/Functions/Script/Estoques/Estoques.js"></script>
+    <!-- SCRIPT PARA CALENDÁRIO DE DISPONIBILIDADE DE VEÍCULOS -->
+    <script src="~/Functions/Script/DisponibilidadeVeiculos/DisponibilidadeVeiculos.js"></script>
+    <!-- SCRIPT PARA MENU DE PENDÊNCIAS CADASTRAIS -->
+    <script src="~/Functions/Script/PendenciasCadastrais/ListarPendenciasCadastrais.js"></script>
+    <!-- SCRIPT PARA MENU DE PENDÊNCIAS DE REPROGRAMAÇÃO (GERENCIAR RESIDUOS) -->
+    <script src="~/Functions/Script/PendenciasReprogramacao/ListarOPsParcialmenteProduzidas.js"></script>
+    <!-- SCRIPT PARA MENU DE PENDÊNCIAS DE PEDIDOS SUSPENSOS -->
+    <script src="~/Functions/Script/PedidosSuspensos/ListarPedidosSuspensos.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '#d_prevMatPrima', confData.d_prevMatPrima);
+
+        });
+
+        var confData = {
+            d_prevMatPrima: function () {
+                $('#d_prevMatPrima').datetimepicker({
+                    sideBySide: true,
+                    showClose: true,
+                    useCurrent: false,
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            $(document).on('click', '#DtOptExp', confDtOptExp.DtOptExp);
+        });
+        var confDtOptExp = {
+            DtOptExp: function () {
+                $('#DtOptExp').datetimepicker({
+                    sideBySide: true,
+                    showClose: true,
+                    useCurrent: false,
+                });
+            }
+        };
+    </script>
+}
+
+<div class="modal_slave">
+</div>
+
+<!--Modal Eliminar Residuos-->
+<div class="modal fade col-xs-12" id="modalResiduos" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Reprogramação de OPs Parciais</h4>
+            </div>
+            <form id="frmResiduos" action="" name="">
+                <div id="divResiduos" class="modal-body">
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--modal desenho do container -->
+<div class="modal fade render-modal" id="modalCubagem" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        </div>
+        <div class="modal-content" style="margin-bottom: 40px;">
+            <div id="drawing-container" style="margin-top: 60px;margin-bottom: 60px; text-align: center;"></div>
+
+            <input type="hidden" id="carInE" name="carInE" value="">
+
+            <div class="text-center">
+                <span class="bold">Ocupação (%).:</span>  	<span id="d_PCVP"></span>
+                <span class="bold">- U.E...:</span>  	<span id="d_TOTItens"></span>
+                <span class="bold">- U.N.E.:</span>  	<span id="d_TTINE"></span>
+            </div>
+            <div class="text-center">
+                @*<button class="btn btn-default" data-bind="click: UnpackItemInRender, enable: AreItemsPacked()"><span class="glyphicon glyphicon-chevron-left"></span></button>*@
+                <a class="fa fa-angle-double-left" data-toggle="modal" href="javascript:viewModel.UnpackItemInRender();"></a>
+                <a class="fa fa-angle-left" data-toggle="modal" href="javascript:viewModel.UnpackItemInRender();"></a>
+                <a class="fa fa-angle-right" data-toggle="modal" href="javascript:viewModel.PackItemInRender();"></a>
+                <a class="fa fa-angle-double-right" data-toggle="modal" href="javascript:viewModel.PackItemInRender();"></a>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-block">
+                    <button class="btn btn-primary" type="button" href=""> Salvar</button>
+                    <button class="btn btn-purple" id="btnAltC" type="button">Alterar</button>
+                    <button class="btn btn-default" type="button" data-dismiss="modal" aria-hidden="true">Voltar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Modal Mapa de expedição-->
+<div class="modal" id="modalOpenMapa" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width: 88%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Exibição pontos do mapa</h4>
+            </div>
+            <section class="box" style="height:500px;width:1000px;">
+                <div id="exibir_pontosMapa">
+
+                </div>
+            </section>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--modal Dados do pedido-->
+<div class="modal fade col-xs-12" id="mDadosPed" tabindex="-1" role="dialog" aria-hidden="true" style="z-index:9990">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h4 class="modal-title">Dados da ordem de produção</h4>
+            </div>
+            <div class="modal-body" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="row">
+                    <div align="right" style="width:100%; margin-right:15px">
+                        <i id="icon-abrir-carga" title="Abrir carga" class="fa fa-car pointer" style="padding-right: 10px;" disabed="false"></i>
+                        <i title="Abrir pedido" class="fa fa-edit pointer" onclick="abrirPedido()" style="padding-right: 10px;"></i>
+                        <i title="Abrir produto" class="fa fa-codepen pointer" onclick="abrirProduto()" style="padding-right: 10px;"></i>
+                        <i title="Abrir fila de produção" class="fa fa-align-left pointer" onclick="abrirFila()" style="padding-right: 10px;"></i>
+                        <i title="Abrir maquina" class="fa fa-cog pointer" onclick="abrirMaquina()"></i>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <!--DADOS DO CLIENTE-->
+                        <div class="titulo-sessao">
+                            DADOS DO CLIENTE
+                        </div>
+                        <span>Código...:</span> 	    <span class="bold" id="d_CliId"></span><br />
+                        <span>Nome...:</span> 	    <span class="bold" id="d_CliNome"></span><br />
+
+                        <!--DADOS DO PEDIDO-->
+                        <div class="titulo-sessao">
+                            DADOS DO PEDIDO
+                        </div>
+                        <span>Pedido OP Integração...:</span>  	<span class="bold" id="d_ordOpIntegracao"></span><br>
+                        <span>Pedido(Id)....:</span> 	    <span class="bold" id="d_pedidoId"></span><br>
+                        <span>Produto(Id)...:</span>  	    <span class="bold" id="d_produtoId"></span><br>
+                        <span>Descrição.....:</span>	    <span class="bold" id="d_produto"></span><br>
+                        <span>Tipo de Produto...:</span>	    <span class="bold" id="d_tipo_produto"></span><br>
+                        <span>QTD...........:</span> 	    <span class="bold" id="d_qtd"></span><br>
+                        <span>M2 Unitário...:</span> 	    <span class="bold" id="d_M2Unitario"></span><br>
+                        <span>M2 Total...:</span> 	        <span class="bold" id="d_M2Total"></span><br />
+                        <span>Entrega De......:</span> 	    <span class="bold" id="d_EntregaDe"></span><br>
+                        <span>Entrega Ate.....:</span> 	    <span class="bold" id="d_EntregaAte"></span><br>
+                        <span>Pedido Status...:</span> 	    <span class="bold" id="d_OrdStatus"></span><br>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <!--DADOS DA PRODUÇÃO-->
+                        <div class="titulo-sessao">
+                            DADOS DA PRODUÇÃO
+                        </div>
+                        <span>Fila de Produção..:</span>  	<span class="bold" id="d_IdFila"></span><br>
+                        <span>Grupo Produtivo..:</span>  	<span class="bold" id="d_grupoProdutivo"></span><br>
+                        <span>Maquina.:</span>	    <span class="bold" id="d_maquinaId"></span>
+                        <span> - </span>	            <span class="bold" id="d_maquina"></span> <br>
+                        <table class="tabela-tintas-maquina">
+                        </table>
+                        <span>Ini. Previsto:</span>      <span class="bold" id="d_inicioPrevisto"></span><br>
+                        <span>Fim. Previsto:</span>	    <span class="bold" id="d_fimPrevisto"></span><br>
+                        <span>Equipe:</span>	    <span class="bold" id="d_EquipeId"></span><br>
+                        <span>Hierar. Cadastro:</span>	    <span class="bold" id="d_hieranquiaSeqTransf"></span><br>
+                        <span>Peças por Pulso...:</span> 	    <span class="bold" id="d_PecasPorPulso"></span><br />
+                        <span>Congela...:</span>	    <span class="bold" id="d_congela"></span><br>
+                        <span>Performance...:</span> 	    <span class="bold" id="d_Performance"></span><br>
+                        <span>Tempo Setup...:</span> 	    <span class="bold" id="d_TempoSetup"></span><br />
+                        <span>Tempo Setup Ajuste...:</span> 	    <span class="bold" id="d_TempoSetupA"></span><br />
+                        <span>Seq.Transform:</span> 	    <span class="bold" id="d_seqTransform"></span><br>
+                        <span>Seq. Repet...:</span> 	    <span class="bold" id="d_seqRepet"></span><br>
+                        <span>Tempo Op Min.:</span> 	    <span class="bold" id="d_tempoOpMin"></span><br>
+                        <span>Previsao de Mat. prima:</span> 	    <span class="bold" id="d_prevMatPrima"></span><br>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                <button type="button" onclick="javascript:AlteraFila()" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--modal alterar fila-->
+<div id="mdAlterarFila" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Editar</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input id="mdAltFilaSequenciaTran" type="hidden" />
+                    <input id="mdAltFilaSequenciaRep" type="hidden" />
+                    <input id="mdAltFilaOrder" type="hidden" />
+
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Produto</label>
+                        <input id="mdAltFilaProduto" readonly class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Máquina</label>
+                        <input id="mdAltFilaMaquina" readonly class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Início Previsto</label>
+                        <input id="mdAltFilaDataIni" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Fim Previsto</label>
+                        <input id="mdAltFilaDataFim" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="mdAltFilaBtnSalvar" class="btn btn-primary">Salvar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--renderiza o formulario de cadastro de fila de producao-->
+@*<div style="display:none" id="divTemplateForm">
+        @Html.Action("Create")
+    </div>*@
+<!-------------------->
+<div class="col-xs-12">
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Dados do Otimizador e da Interface -->
+<div class="col-xs-12 ">
+    <section class="box " style=" position:relative " id="secaoInfoCarregando"></section>
+
+    <div class="col-lg-12">
+        <div class="dropdown" style="text-align: right;">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                Ações
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu" style="margin-left: 80%;">
+                <li>
+                    <a onclick="DadosSchedule.executarAgora('s', 's', '2')"><i class="fa fa-arrow-right"></i>Interface + Otimizador FULL</a>
+                    <a onclick="DadosSchedule.executarAgora('s', '', '2')"><i class="fa fa-arrow-right"></i>Otimizador FULL (Frete e produção)</a>
+                    <a onclick="DadosSchedule.executarAgora('s', '', '1')"><i class="fa fa-arrow-right"></i>Otimizador Produção</a>
+                    <a onclick="DadosSchedule.execProcedure()"><i class="fa fa-arrow-right"></i>Interface Onduladeira Terceiro</a>
+                    <a onclick="DadosSchedule.cancelar()"><i class="fa fa-arrow-right"></i>Cancelar Execução Atual</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="panel-group collapsed" id="accordion-4" role="tablist" aria-multiselectable="true">
+
+            <!-- Barra do Otimizador -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne5">
+                    <div class="panel-title" style="height: 50px;">
+                        <div id="acoesOtimizador" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="" style="position:relative; margin: 0; width: 40%; height:100%;">
+
+                        </div>
+                        <a data-toggle="collapse" data-parent="#accordion-4" href="#collapseOne-5" aria-expanded="false" aria-controls="collapseOne-5" class="collapsed">
+                            <div id="otLoad">
+                                <i id="iconOtLoad" class="fa fa-check"></i>
+                                Otimizador - <h style="padding: 10px;">Execução anterior: <span id="ultima_exec_otimizador">N/A</span></h> |
+                                <h style="padding: 10px;">Próxima execução: <span id="prox_exec_otimizador">N/A</span></h>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div id="collapseOne-5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne5" aria-expanded="false" style="height: 0;">
+                        <div class="panel-body">
+
+                            <div class="col-lg-12" id="mensagensOtimizador">
+                                <table id="tableMensagensOtimizador" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">MENSAGEM</th>
+                                            <th scope="col">TIPO</th>
+                                            <th scope="col">EMISSÃO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra da Interface -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne6">
+                    <div class="panel-title" style="height: 50px;">
+                        <div id="acoesInterface" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="" style="position:relative; margin: 0; width: 40%; height: 100%;">
+                        </div>
+                        <a data-toggle="collapse" data-parent="#accordion-4" href="#collapseOne-6" aria-expanded="false" aria-controls="collapseOne-6" class="collapsed">
+                            <div id="itLoad">
+                                <i id="iconItLoad" class="fa fa-check"></i>
+                                Interface - <h style="padding: 10px;">Execução anterior: <span id="ultima_exec_interface">N/A</span></h> |
+                                <h style="padding: 10px;">Próxima execução: <span id="prox_exec_interface">N/A</span></h>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div id="collapseOne-6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne6" aria-expanded="false" style="height: 0;">
+                        <div class="panel-body">
+
+                            <div class="col-lg-12" id="mensagensInterface">
+                                <table id="tableMensagensInterface" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">MENSAGEM</th>
+                                            <th scope="col">TIPO</th>
+                                            <th scope="col">EMISSÃO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <section class="box nobox marginBottom0">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-industry icon-md icon-rounded icon-primary"></i>
+                            <div class="stats">
+                                <h4><strong>65%</strong></h4>
+                                <span>OEE</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-handshake-o icon-md icon-rounded icon-accent"></i>
+                            <div class="stats">
+                                <h4><strong>78%</strong></h4>
+                                <span>OTIF</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-industry icon-md icon-rounded icon-purple"></i>
+                            <div class="stats">
+                                <h4><strong>16 Ton</strong></h4>
+                                <span>Sobra de Produção</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-dollar icon-md icon-rounded icon-warning"></i>
+                            <div class="stats">
+                                <h4><strong>R$ 25.850,00</strong></h4>
+                                <span>Impacto Antecipação</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End .row -->
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-12">
+        <section class="box nobox marginBottom0">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-building-o icon-md icon-rounded icon-primary"></i>
+                            <div class="stats">
+                                <h4><strong>75%</strong></h4>
+                                <span>Qualidade</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-calendar-check-o icon-md icon-rounded icon-accent"></i>
+                            <div class="stats">
+                                <h4><strong>75%</strong></h4>
+                                <span>Disponibilidade</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-area-chart icon-md icon-rounded icon-purple"></i>
+                            <div class="stats">
+                                <h4><strong>75%</strong></h4>
+                                <span>Performance Cartonagem</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-dollar icon-md icon-rounded icon-warning"></i>
+                            <div class="stats">
+                                <h4><strong>15</strong></h4>
+                                <span>devoluções</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End .row -->
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-12">
+        <section class="box nobox marginBottom0">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-battery-3 icon-md icon-rounded icon-primary"></i>
+                            <div class="stats">
+                                <h4><strong>3.3 Gr/Area Empresa</strong></h4>
+                                <span>Consumo de tinta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-bullhorn icon-md icon-rounded icon-accent"></i>
+                            <div class="stats">
+                                <h4><strong>32</strong></h4>
+                                <span>Reclamações</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-battery-3 icon-md icon-rounded icon-purple"></i>
+                            <div class="stats">
+                                <h4><strong>1.2</strong></h4>
+                                <span>Consumo de Papel</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-pause icon-md icon-rounded icon-warning"></i>
+                            <div class="stats">
+                                <h4><strong>3,1%</strong></h4>
+                                <span>Refile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End .row -->
+            </div>
+        </section>
+    </div>
+    <div class="col-lg-12">
+        <section class="box nobox marginBottom0">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-area-chart icon-md icon-rounded icon-primary"></i>
+                            <div class="stats">
+                                <h4><strong>98%</strong></h4>
+                                <span>Performance Onduladeira</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-battery-3 icon-md icon-rounded icon-accent"></i>
+                            <div class="stats">
+                                <h4><strong>1.6 Gr/Ton</strong></h4>
+                                <span>Consumo de cola </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-battery-3 icon-md icon-rounded icon-purple"></i>
+                            <div class="stats">
+                                <h4><strong>1.2 Gr/Ton</strong></h4>
+                                <span>Consumo de resina</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-xs-12">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-dollar icon-md icon-rounded icon-warning"></i>
+                            <div class="stats">
+                                <h4><strong>21</strong></h4>
+                                <span>H.Extra/Ton</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End .row -->
+            </div>
+        </section>
+    </div>
+    <!-- indicadores -->
+    <!--Botoes expedição -->
+
+
+
+    <div class="col-lg-12">
+        <div class="panel-group collapsed" id="accordion-4" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne4">
+                    <div class="panel-title">
+                        <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="TabelaCargaMaquina.carregarTabela('', '', '')" style="margin-top: 15px;">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                        @*onclick="alert('chama ajax');     " *@
+                        <a onclick="cmLoad()" data-toggle="collapse" data-parent="#accordion-4" href="#collapseOne-4" aria-expanded="false" aria-controls="collapseOne-4" class="collapsed">
+                            <div id="cmLoad"></div>
+
+                        </a>
+                    </div>
+                </div>
+                <div id="collapseOne-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne4" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+                        @*carga maquina*@
+
+
+                        <nav id="menuexp" class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <!-- Complete Admin and toggle get grouped for better mobile display -->
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                </div>
+
+                                <!-- Collect the nav links, forms, and other content for toggling -->
+                                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relatórios <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="@Url.Action("../../Consultas/ListaConsultas", new { sPesquisa="" })"><i class="fa fa-search"></i> Consultas</a></li>
+
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <ul class="nav navbar-nav navbar-left hidden-xs hidden-lg">
+                                        <li><a href="#"><i class="fa fa-search"></i></a></li>
+                                    </ul>
+                                    <ul class="nav navbar-nav navbar-right">
+
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+
+                                                <li><a onclick="btnSimularCM()" id="btnSimularCM" name="btnSimularCM"><i class="fa fa-bolt"></i> Simular Entrada de Pedido </a></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a onclick="btnSimularCM()" id="btnSimularCM" name="btnSimularCM" title="Simular Entrada de Pedido"><i class="fa fa-bolt"></i></a>
+                                        </li>
+                                    </ul>
+                                </div><!-- /.navbar-collapse -->
+                            </div><!-- /.container-fluid -->
+                        </nav>
+
+
+                        <div class="col-lg-12" id="cargaMaquina">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo4">
+                    <h4 class="panel-title">
+                        <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" title="Atualizar expedições" onclick="TabelaFilaExpedicao.eventoPesquisarPrincipalAPS()" style="margin-top: 15px;">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+
+                        <a onclick="exLoad()" class="collapsed" data-toggle="collapse" data-parent="#accordion-4" href="#collapseTwo-4" aria-expanded="false" aria-controls="collapseTwo-4">
+                            <div id="exLoad"></div>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo4" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+
+
+                        @*expediçao*@
+
+                        <nav id="menuexp" class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <!-- Complete Admin and toggle get grouped for better mobile display -->
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                </div>
+
+                                <!-- Collect the nav links, forms, and other content for toggling -->
+                                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relatórios <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="@Url.Action("../../Consultas/ListaConsultas", new { sPesquisa="" })"><i class="fa fa-search"></i> Consultas</a></li>
+
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <ul class="nav navbar-nav navbar-left hidden-xs hidden-lg">
+                                        <li><a href="#"><i class="fa fa-search"></i></a></li>
+                                    </ul>
+                                    <div id="divPaiLinhas"></div>
+                                    <ul class="nav navbar-nav navbar-right">
+
+                                        <form class="navbar-form navbar-left hidden-md hidden-sm">
+                                            @*<div class="form-group">
+                                                <select class="form-control alterarLinhaDoTempo" id="optexp" value="@ViewBag.optexp">
+                                                    <option value="1">Privilegiar Data de Entrega</option>
+                                                    <option value="2">Privilegiar Ocupação dos Caminhões</option>
+                                                    <option value="2">Privilegiar menor Custo Global</option>
+                                                </select>
+                                                </div>*@
+                                            @*<span title="Define o número de dias em que o sistema poderá antecipar pedidos para otimizar espaços vazios nos caminhões.">
+                                                    Antecipar ate: <input type="text" id="MaxDiasAntecipacao" name="MaxDiasAntecipacao" class="form-control" value="0">
+                                                </span>*@
+                                            @*<span title="Define o número de dias que o sistema irá refazer todo planejamento de produção e expedição.">Planejar ate: <input type="text" id="diasAfrente" name="diasAfrente" class="form-control" value="1"></span>*@
+                                        </form>
+
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                                            @*<button id="btnRecalcFilaExpedicao" name="btnRecalcFilaExpedicao" type="button" class="btn btn-default navbar-btn">Atualizar</button>*@
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#btnRecalcFilaExpedicao" id="btnRecalcFilaExpedicao" name="btnRecalcFilaExpedicao"><i class="fa fa-bolt"></i> Otimizar</a></li>
+                                                <li><a href="#btnRecalcFilaExpedicaoFULL" id="btnRecalcFilaExpedicaoFULL" name="btnRecalcFilaExpedicaoFULL"><i class="fa fa-bolt"></i><i class="fa fa-bolt"></i> Otimizar Full</a></li>
+                                                <li><a href="#btnUnirCargas" id="btnUnirCargas" name="btnUnirCargas" onclick="javascript: unirCargasMarcadas();"><i class="fa fa-truck"></i> Unir cargas Marcadas</a></li>
+
+                                                <li class="dropdown-submenu">
+                                                    <a href="#"><i class="fa fa-file-text-o"></i> Status</a>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a onclick="alterarStatusCarga('1')">Aberta</a></li>
+                                                        <li><a onclick="alterarStatusCarga('1.1')">Reotimizar</a></li>
+                                                        <li><a onclick="alterarStatusCarga('1.2')">Antecipar Alguém</a></li>
+                                                        <li><a onclick="alterarStatusCarga('2')">Aprovada</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#btnRecalcFilaExpedicao" id="btnRecalcFilaExpedicao" name="btnRecalcFilaExpedicao" title="Otimizar Expedição e produção "><i class="fa fa-bolt"></i></a>
+                                        </li>
+                                    </ul>
+                                </div><!-- /.navbar-collapse -->
+                            </div><!-- /.container-fluid -->
+                        </nav>
+
+
+                        <div class="col-lg-12" id="Cargas">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree4">
+                    <h4 class="panel-title">
+                        <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="TabelaFilaProducao.carregarTabela()" style="margin-top: 15px;">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                        <a onclick="fpLoad()" class="collapsed" data-toggle="collapse" data-parent="#accordion-4" href="#collapseThree-4" aria-expanded="false" aria-controls="collapseThree-4">
+                            <div id="fpLoad"></div>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree4" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+                        @*FILA DE PRODUÇÃO*@
+                        <nav id="menupro" class="navbar navbar-default">
+                            <div class="container-fluid">
+                                <!-- Complete Admin and toggle get grouped for better mobile display -->
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                    <a class="navbar-brand" href="#menupro">Fila de produção</a>
+                                </div>
+                                <div class="collapse navbar-collapse pull-right" id="bs-example-navbar-collapse-3">
+                                    <button id="btnRecalcFila" name="btnRecalcExpd" type="button" class="btn btn-default navbar-btn">Atualizar</button>
+
+                                </div>
+
+                                <!-- Collect the nav links, forms, and other content for toggling -->
+                                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+                                        <li class="active"><a href="#menuexp">Fila Expedição<span class="sr-only">(current)</span></a></li>
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relatórios <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="@Url.Action("../../Consultas/ListaConsultas", new { sPesquisa="" })"><i class="fa fa-search"></i> Consultas</a></li>
+                                                @*<li><a href="#">Another action</a></li>
+                                                    <li><a href="#">Something else here</a></li>
+                                                    <li class="divider"></li>
+                                                    <li><a href="#">Separated link</a></li>
+                                                    <li class="divider"></li>
+                                                    <li><a href="#">One more separated link</a></li>*@
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <form class="navbar-form navbar-left hidden-md hidden-sm">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Pesquisar">
+                                        </div>
+                                    </form>
+                                    <ul class="nav navbar-nav navbar-left hidden-xs hidden-lg">
+                                        <li><a href="#"><i class="fa fa-search"></i></a></li>
+                                    </ul>
+                                    <div class="checkbox-inline" style="margin-top: 10px">
+                                        <input class="form-check-input" type="radio" name="btnRadioVisualizacao" id="visualizacaoMaquina" value="0" checked="checked">
+                                        <label class="form-check-label" for="visualizacaoMaquina">Somente máquinas</label>
+                                    </div>
+                                    <div class="checkbox-inline" style="margin-top: 10px">
+                                        <input class="form-check-input" type="radio" name="btnRadioVisualizacao" id="visualizacaoMaquinaEquipe" value="1">
+                                        <label class="form-check-label" for="visualizacaoMaquinaEquipe">Máquinas e Equipes</label>
+                                    </div>
+                                    <input type="button" hidden="hidden" id="hackAPS" />
+                                    <ul class="nav navbar-nav navbar-right">
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a onclick="consultaFilaTotal()">Consulta Fila</a></li>
+                                                <li class="divider"></li>
+
+                                            </ul>
+                                        </li>
+                                        <li><a href="#"><i class="fa fa-reorder"></i></a></li>
+                                    </ul>
+                                </div><!-- /.navbar-collapse -->
+
+
+                            </div><!-- /.container-fluid -->
+                        </nav>
+
+                        <div class="content-body">
+
+
+                            @*<form class="form-inline form-group" style="margin-bottom:2%;">
+                                    <select class="form-control alterarLinhaDoTempo" value="24">
+                                        <option value="1">24 horas</option>
+                                        <option value="2">48 horas</option>
+                                        <option value="3">72 horas</option>
+                                    </select>
+
+                                </form>*@
+                            <div style="display: flex">
+                                <div style="width:50%;">
+                                    <label style="margin-right:2px">Escala de visualização:</label>
+                                    <button onclick="evtMenosEscala()">-</button>
+                                    <button onclick="evtMaisEscala()">+</button>
+                                </div>
+
+                                <div style="width:50%;" align="right">
+                                    <!-- Parte do modelo com paginação
+                                    <label style="margin-right:2px" id="semanaFilaProducao">Ir para a semana: </label>
+                                    <input onkeypress="eventoKeyPressFilaProducao(event);" size="4" type="number" id="semanaFilaProducaoInput" style=" width: 50px;" />
+                                    -->
+                                </div>
+                            </div>
+
+                            <!--TABELA FILA DE PRODUCAO-->
+                            <div style="width: 100%; position: relative" class="table-responsive" id="divTabelaFiladeProducao">
+                                <table class="table-striped" id="tabelaFiladeProducao">
+                                    <thead>
+                                        <tr id="linhaTempoFilaProducao">
+                                            <!-- IDENTIFICACAO DA MAQUINA -->
+                                            <th class="sticky-header"></th>
+                                            <th class="sticky-header">
+                                                <div id="contemLinhaDoTempo" class="ui-sortable " style="height: 32px; display: inline-flex;  ">
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <!-- CRIA UMA LINHA DA TABELA (FOREACH PARA INSERIR A QUANTiDADE DE MAQUINAS NO BD) -->
+                                    @foreach (Maquina row in ViewBag.m)
+                                    {
+                                        <!-- IDENTIFICACAO DA MAQUINA -->
+                                        <!-- Se a linha tiver o campo EQU_ID, é uma equipe -->
+                                        @*<td style="text-align: center;">*@
+                                        @if (row.EQU_ID != null && row.EQU_ID != "")
+                                        {
+                                            <tr class="equipes" id="@row.EQU_ID" style="display: none;">
+
+                                                <td class="sticky-maquinas">
+
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default dropdown-toggle custom-buttom" data-toggle="dropdown" aria-expanded="false">@row.EQU_ID <span class="caret"></span></button>
+                                                        <ul class="dropdown-menu custom-buttom" role="menu" style="position: relative; top:0;">
+                                                            <li><a href="#">@row.EQU_ID</a></li>
+                                                        </ul>
+
+                                                    </div>
+                                                </td>
+                                                @*<td style="margin: 0; padding: 0;">*@
+                                                <td class="sticky-fila-maquinas">
+
+                                                    <div id="maq_@row.EQU_ID" style="height: 31px; display: flex;  ">
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if (row.MAQ_ID != "ONDU")
+                                        {
+                                            <tr class="maquinas" id="@(String.Format("{0}_{1}", row.MAQ_DESCRICAO, row.MAQ_ID))">
+                                                <td class="sticky-maquinas">
+
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default dropdown-toggle custom-buttom" data-toggle="dropdown" aria-expanded="false">@row.MAQ_DESCRICAO <span class="caret"></span></button>
+                                                        <ul class="dropdown-menu custom-buttom" role="menu" style="position: relative; top:0;">
+                                                            <li><a href="#">@row.MAQ_ID</a></li>
+                                                            <li><a onclick="consultaFilaTotal('@row.MAQ_ID')">Consulta Fila</a></li>
+                                                        </ul>
+
+                                                    </div>
+                                                </td>
+                                                @*<td style="margin: 0; padding: 0;">*@
+                                                <td class="sticky-fila-maquinas">
+
+                                                    <div id="maq_@row.MAQ_ID" style="height: 31px; display: flex;  ">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr class="maquinas" id="@(String.Format("{0}_{1}", row.MAQ_DESCRICAO, row.MAQ_ID))">
+                                                <td class="sticky-maquinas maquina-onduladeira">
+
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default dropdown-toggle custom-buttom" data-toggle="dropdown" aria-expanded="false">@row.MAQ_DESCRICAO <span class="caret"></span></button>
+                                                        <ul class="dropdown-menu custom-buttom" role="menu" style="position: relative; top:0;">
+                                                            <li><a href="#">@row.MAQ_ID</a></li>
+                                                        </ul>
+
+                                                    </div>
+                                                </td>
+                                                @*<td style="margin: 0; padding: 0;">*@
+                                                <td class="maquina-fila-onduladeira">
+                                                    <div id="div_maq_@row.MAQ_ID" style="display:flex">
+                                                        <div id="maq_@row.MAQ_ID" class="ui-sortable cont_onduladeira" style="height: 100px; background-color: #d5b69f">
+                                                        </div>
+                                                        <!--
+
+                                                            <canvas id="maq_@row.MAQ_ID" class="ui-sortable" style="display: inline-flex;">
+                                                            </canvas>
+
+                                                        -->
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="paginacao_semanas">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <section class="box nobox marginBottom0">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-truck icon-md icon-rounded icon-primary"></i>
+                            <div class="stats">
+                                <h4><strong>75%</strong></h4>
+                                <span>Ocupação</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-mail-reply icon-md icon-rounded icon-accent"></i>
+                            <div class="stats">
+                                <h4><strong>30 Ton</strong></h4>
+                                <span>Devolução</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-group icon-md icon-rounded icon-purple"></i>
+                            <div class="stats">
+                                <h4><strong>7%</strong></h4>
+                                <span>Atraso Entrega</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="r4_counter db_box">
+                            <i class="pull-left fa fa-dollar icon-md icon-rounded icon-warning"></i>
+                            <div class="stats">
+                                <h4><strong>R$ 8,50</strong></h4>
+                                <span>Frete Reais/M3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End .row -->
+            </div>
+        </section>
+    </div>
+
+
+
+    <div class="col-lg-12">
+        <div class="panel-group collapsed" id="accordion-5" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <!--Estoque PA -->
+                <div class="panel-heading" role="tab">
+                    <div class="panel-title">
+                        <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="javascript:EstoquePA('N1','CXCN');" title="Atualizar estoque PA">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                        <a data-toggle="collapse" data-parent="#accordion-5" href="#estoquePaArea" aria-expanded="false" class="collapsed">
+                            <div id="PALoad"><i class="fa fa-check">  </i> Estoque PA</div>
+
+                        </a>
+                    </div>
+                </div>
+                <!--CORPO ESTOQUE PA-->
+                <div id="estoquePaArea" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne5" aria-expanded="false" style="height: 0px;">
+
+                </div>
+
+
+                <div class="panel panel-default">
+                    <!--<!-- Estoque intermediario -->
+                    <div class="panel-heading" role="tab">
+                        <div class="panel-title">
+                            <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" onclick="javascript:EstoqueINT('N1','CXCN');">
+                                <i class="fa fa-refresh"></i>
+                            </div>
+                            <a data-toggle="collapse" data-parent="#accordion-5" href="#estoqueIntArea" aria-expanded="false" class="collapsed">
+                                <div id="PILoad"><i class="fa fa-check">  </i> Estoque Intermediário </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!--Grupos intermediario -->
+                    <div id="estoqueIntArea" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne5" aria-expanded="false" style="height: 0px;">
+
+                    </div>
+
+                </div>
+
+                <div class="panel panel-default">
+                    <!--Estoque MP-->
+                    <div class="panel-heading" role="tab">
+                        <div class="panel-title">
+                            <div id="" class="pull-right btnRefreshAps" data-toggle="tooltip" title="Atualizar estoque MP" onclick="javascript:EstoqueMP('N1','CXCN');">
+                                <i class="fa fa-refresh"></i>
+                            </div>
+                            <a data-toggle="collapse" data-parent="#accordion-5" href="#estoqueMpArea" aria-expanded="false" class="collapsed">
+                                <div id="MPLoadss"><i class="fa fa-check">  </i> Necessidade MP </div>
+                            </a>
+                        </div>
+                    </div>
+                    <!--Grupos MP -->
+                    <div id="estoqueMpArea" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne5" aria-expanded="false" style="height: 0px;">
+                        <div class="panel-body">
+                            <nav id="menuexp" class="navbar navbar-default">
+                                <div class="container-fluid">
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                        <ul class="nav navbar-nav">
+
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relatórios <span class="caret"></span></a>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="/PlugAndPlay/aps/..%2F..%2FConsultas%2FListaConsultas"><i class="fa fa-search"></i> Consultas</a></li>
+
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <ul class="nav navbar-nav navbar-left hidden-xs hidden-lg">
+                                            <li><a href="#"><i class="fa fa-search"></i></a></li>
+                                        </ul>
+                                        <div id="divPesquisaMP">
+                                            <div class="" id="divPaiLinhasMP">
+                                                <div class="collapse navbar-collapse">
+                                                    <div class="nav navbar-nav">
+                                                        <div class="form-group  col-xs-3 col-sm-3 colocapica">
+                                                            <div class="input-group">
+                                                                <div class=" col-sm-12 col-md-12 col-xs-12 padding">
+                                                                    <p class="col-sm-12 col-md-12" id="" for="dataDeMP" style="">DATA DE:</p>
+                                                                    <input data-column="dataDeMP" type="datetime-local" class="menu-right-click form-control inputLOCKprincipal0" id="dataDeMP" placeholder="DATA DE" title="DATA DE">
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group  col-xs-3 col-sm-3 colocapica">
+                                                            <div class="input-group">
+                                                                <div class=" col-sm-12 col-md-12 col-xs-12 padding">
+                                                                    <p class="col-sm-12 col-md-12" id="" for="dataAteMP" style="">DATA ATÉ:</p>
+                                                                    <input data-column="dataAteMP" type="datetime-local" class="menu-right-click form-control inputLOCKprincipal0" id="dataAteMP" placeholder="DATA ATÉ" title="DATA ATÉ">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group col-xs-4 col-sm-4 colocapica" id="div2">
+                                                            <div class="input-group">
+                                                                <p class="col-sm-12 col-md-12" style="visibility:hidden">_</p>
+                                                                <div class=" col-sm-12 col-md-12 col-xs-12 padding">
+                                                                    <!--pesquisarMP()-->
+                                                                    <div class="input-group inputLinhaMP">
+                                                                        <span class="input-group-addon" id="btnRemoverLinhaMP">
+                                                                            <button class="fa fa-trash" style="background:transparent;border:none;"></button>
+                                                                        </span>
+
+                                                                        <span class="input-group-addon" id="btnPesquisarMP">
+                                                                            <button class="fa fa-search" onclick="pesquisarMP()" style="background:transparent;border:none"></button>
+                                                                        </span>
+
+                                                                        <span class="input-group-addon" id="btnNovaLinhaMP" aria-hidden="">
+                                                                            <button class="fa fa-plus" style="background:transparent;border:none"></button>
+                                                                        </span>
+
+                                                                        <span class="input-group-addon" id="btnExcelMP" onclick="exportarExcelMP();">
+                                                                            <button class="fa fa-file-excel-o" style="background:transparent;border:none"></button>
+                                                                        </span>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="input-group">
+                                                            <ul class="nav navbar-nav">
+                                                                <p class="col-sm-6 col-md-6" style="visibility:hidden">_</p>
+                                                                <li class="dropdown">
+                                                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ações<span class="caret"></span></a>
+
+                                                                    <ul class="dropdown-menu" id="acoesMP">
+                                                                        <li class="dropdown-header">Ações padrão</li>
+                                                                        <li onclick="gerarHTMLInsert()"><a href="#">Incluir</a></li>
+                                                                        <li role="separator" class="divider"></li>
+                                                                        <li class="dropdown-header">Ações específicas</li>
+                                                                        <li onclick="$('#modal-filtros').modal('show');"><a href="#">Preferências de Filtros</a></li>
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <ul class="nav navbar-nav navbar-right">
+
+                                            <form class="navbar-form navbar-left hidden-md hidden-sm">
+                                            </form>
+
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="#btnExportarExcel" id="btnExportarExcel" name="btnExportarExcel" onclick="exportarExcelMP();"><i class="fa fa-file-excel-o"></i> Exportar Excel</a></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#btnRecalcFilaExpedicao" id="btnRecalcFilaExpedicao" name="btnRecalcFilaExpedicao" title="Otimizar Expedição e produção "><i class="fa fa-bolt"></i></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </nav>
+
+                            <div class="col-lg-12" id="tabelaEstoqueMP">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,279 @@
+﻿
+@{
+    ViewData["Title"] = "OtimizarCarga";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--
+    ViewBag.cargaPrincipal = cargaPrincipal;
+    ViewBag.listaCargas = listaCargas;
+-->
+@section styles{
+    <link href="~/css/dynamiccss.css" rel="stylesheet" />
+    <link href="~/lib/leaflet/leaflet.css" rel="stylesheet" />
+    <style>
+        .map {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+}
+
+
+@section scripts{
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/Functions/Script/three-min.js"></script>
+    <script src="~/Functions/Script/orbit-controls.js"></script>
+    <script src="~/Functions/Script/container-packing.js"></script>
+}
+
+
+<h2>OtimizarCarga</h2>
+
+<div style="display:none" id="cargaPrincipal" class="cargaPrincipal_@ViewBag.cargaPrincipal"></div>
+<div style="display:none" id="listaCargas" class="listaCargas_@ViewBag.listaCargas"></div>
+
+<section id="telaOtimizarCarga" onloadeddata="carregarTelaOtimizarCarga()">
+    <div class="col-xs-12 col-md-12" id="carga{@ViewBag.cargaPrincipal}">
+        <section class="box">
+            <header class="panel_header">
+                <div id="cabecalho_@ViewBag.cargaPrincipal" class="col-xs-12" style="font-size: 16px;">
+                    <br>
+                    <i class="fa fa-check" style="color:#f44336;"></i>
+                </div>
+            </header>
+
+            <div class="content-body" style="display:flex">
+                <div style="width:50%;">
+                    <div class="content-body" style="display:flex">
+                        <div class="row" style="width:85%;">
+                            <div class="col-xs-12">
+                                <p id="iniFimPrev" title="Início e Fim previsto" style="font-size:10px;">Ini: TESTE Fim: TESTE (id="iniFimPrevCARGA")</p>
+                                <p id="tipIdOriAtual" title="Tipo de veículo" style="font-size:10px;">ORIGINAL: TESTE ATUAL: TESTE (id="tipIdOriAtual")</p>
+                                <br />
+                                <table border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td valign="bottom">
+                                                <img width="48px" src="/images/cabineVERMELHO.png">
+                                            </td>
+
+                                            <td style="background-color:#1C1C1C" valign="bottom">
+                                                <table width="200px" height="42px" style="border-collapse: collapse; border: 1px solid black;">
+                                                    <tbody>
+                                                        <tr id="tabelaCaminhao">
+                                                            <td width="100%"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <img width="200px" src="/images/carroceriaVERMELHO.png">
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                                <br />
+                                <p style="font-size:11px" id="cbCidades_@ViewBag.cargaPrincipal">
+
+                                </p>
+
+                                <table style="font-size:10px;">
+                                    <tbody>
+                                        <tr align="center">
+                                            <th style="padding-left:5px" title="Ocupação">Ocupação</th>
+                                            <th style="padding-left:5px" title="Volume carregado m³">Vol carregado</th>
+                                            <th style="padding-left:5px" title="Volume livre m³">Vol livre</th>
+                                            <th style="padding-left:5px" title="Peso pedido">Peso pedido</th>
+                                            <th style="padding-left:5px" title="Fim produção">Fim prod</th>
+                                        </tr>
+                                        <tr align="center">
+                                            <td style="padding-left:5px" id="ocup" title="Ocupação" class="ocup_">87.29%</td>
+                                            <td style="padding-left:5px" id="volCar" title="Volume carregado m³" class="volCar_">79.50</td>
+                                            <td style="padding-left:5px" id="volLiv" title="Volume livre m³" class="volLiv_">11.58</td>
+                                            <td style="padding-left:5px" id="pesoTot" title="Peso pedido" class="pesoTot_">13066</td>
+                                            <td style="padding-left:5px" id="dataFimPrev" title="Fim produção" class="dataFimPrev_">17/01 23:15</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div style="width:33%;">
+                            <table>
+                                <tbody id="bodyCidades_@ViewBag.cargaPrincipal">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="exibicao3D" style="width:50%;">
+
+                    <div id="drawing-container" class="tamanho_600_250" style="text-align: center;"></div>
+
+                    <input type="hidden" id="carInE" name="carInE" value="">
+
+                    <div class="text-center" style="font-size:12px">
+                        <span class="bold">Ocupação (%).:</span>  	<span id="d_PCVP"></span>
+                        <span class="bold">- U.E...:</span>  	<span id="d_TOTItens"></span>
+                        <span class="bold">- U.N.E.:</span>  	<span id="d_TTINE"></span>
+                    </div>
+                    <div class="text-center">
+                        @*<button class="btn btn-default" data-bind="click: UnpackItemInRender, enable: AreItemsPacked()"><span class="glyphicon glyphicon-chevron-left"></span></button>*@
+                        <a class="fa fa-angle-double-left" data-toggle="modal" href="javascript:viewModel.UnpackItemInRender();"></a>
+                        <a class="fa fa-angle-left" data-toggle="modal" href="javascript:viewModel.UnpackItemInRender();"></a>
+                        <a class="fa fa-angle-right" data-toggle="modal" href="javascript:viewModel.PackItemInRender();"></a>
+                        <a class="fa fa-angle-double-right" data-toggle="modal" href="javascript:viewModel.PackItemInRender();"></a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="content-body" style="flex;">
+                <div style="width:100%;">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#pedFuturos" data-toggle="tab" class="active">Pedidos futuros</a></li>
+                        <li><a href="#itePedidos" data-toggle="tab">Itens da carga</a></li>
+                        <li><a href="#carSimuladas" data-toggle="tab">Cargas simuladas</a></li>
+                        <li><a href="#tipVeiculos" data-toggle="tab">Tipos veículos</a></li>
+                    </ul>
+
+                    <div class="tab-content row">
+                        <div class="tab-pane fade active in" id="pedFuturos">
+
+                            <div class=" col-sm-2 col-md-2 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="CARGA">CARGAS</p>
+                                <input data-column="CARGA" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputCarga" placeholder="CARGAS" title="CARGA">
+                            </div>
+                            <div class=" col-sm-2 col-md-2 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="RAIO">RAIO</p>
+                                <input data-column="RAIO" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputRaio" placeholder="RAIO" title="RAIO">
+                            </div>
+                            <div class=" col-sm-1 col-md-1 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="UF">UFs</p>
+                                <input data-column="UF" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputUf" placeholder="UFs" title="UF">
+                            </div>
+                            <div class=" col-sm-2 col-md-2 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="MUNICIPIO">MUNICÍPIOS</p>
+                                <input data-column="MUNICIPIO" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputMunicipio" placeholder="MUNICíPIOs" title="MUNICIPIO">
+                            </div>
+                            <div class=" col-sm-2 col-md-2 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="CLIENTE">CLIENTEs</p>
+                                <input data-column="CLIENTE" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputCliente" placeholder="CLIENTE" title="CLIENTE">
+                            </div>
+                            <div class=" col-sm-2 col-md-2 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="DATA_ANTECIPACAO">DATA DE ANTECIPAÇÃO</p>
+                                <input data-column="DATA_ANTECIPACAO" type="text" value="" class="menu-right-click form-control inputprincipal1" id="inputDiasAntecipacao" placeholder="DATA DE ANTECIPAÇÃO" title="DATA_ANTECIPACAO">
+                            </div>
+
+                            <div class=" col-sm-1 col-md-1 col-xs-6 padding">
+                                <p class="col-sm-12 col-md-12" for="" style="visibility:hidden;">_</p>
+                                <span class="input-group-addon" id="btnExcel" onclick="pesquisarPedidosFuturos()">
+                                    <button class="fa fa-search" style="background:transparent;border:none"></button>
+                                </span>
+                            </div>
+
+
+
+
+                            <div class=" col-sm-12 col-md-12 col-xs-12 padding">
+                                <div style="overflow:auto; height:600px">
+                                    <table class="table table-bordered table-striped text-center table_expedicao" id="table_pedFut">
+                                    </table>
+                                </div>
+                            </div>
+
+
+                            <div class=" col-sm-12 col-md-12 col-xs-12 padding">
+                                <div id="botoesPedidosFuturos">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="itePedidos">
+                            <div style="overflow:auto; height:600px;">
+                                <table class="table table-bordered table-striped text-center table_expedicao">
+                                    <thead>
+                                        <tr>
+                                            <th>BOTÃO SALVAR</th>
+                                            <th>NOVA CARGA</th>
+                                            <th>NOVA QTD. PLANEJADA</th>
+                                            <th>NOVA ORDEM ENTREGA</th>
+                                            <th>NOVO TIPO CAMINHÃO</th>
+                                            <th>CARGA ATUAL</th>
+                                            <th data-toggle="tooltip" title="QUANTIDADE PLANEJADA ATUAL">QTD. PLAN.</th>
+                                            <th data-toggle="tooltip" title="ORDEM ENTREGA ATUAL">ORD. ENTREGA</th>
+                                            <th data-toggle="tooltip" title="NÚMERO DO PEDIDO">N°. PEDIDO</th>
+                                            <th data-toggle="tooltip" title="PEDIDO QUANTIDADE">PEDIDO QTD.</th>
+                                            <th>PRODUTO ID</th>
+                                            <th>PRODUTO DESCRIÇÃO</th>
+                                            <th>SALDO ESTOQUE</th>
+                                            <th>PESO TOTAL PEDIDO</th>
+                                            <th>M³</th>
+                                            <th data-toggle="tooltip" title="PERCENTUAL ESTOQUE PRONTO">% ESTOQUE PRONTO</th>
+                                            <th data-toggle="tooltip" title="DIMENSÕES DO PALLET (LARGURA x ALTURA x COMPRIMENTO)">DIMENSÕES DO PALLET (LxAxC)</th>
+                                            <th data-toggle="tooltip" title="DATA DE ENTREGA">DATA DE ENTREGA</th>
+                                            <th data-toggle="tooltip" title="FIM PREVISTO PRODUÇÃO">FIM PREV. PROD.</th>
+                                            <th>CARGA ID JUNTADA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyItePedidos">
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade" id="carSimuladas">
+                            <div style="overflow:auto" id="tableCarSimuladas">
+                               
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="tipVeiculos">
+                            <div style="overflow:auto" id="tableTipVeiculos">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="box">
+            <header class="panel_header">
+                <div id="mapa_@ViewBag.cargaPrincipal" class="col-xs-12" style="font-size:16px;">
+                    <br>
+                    <i class="fa fa-check" style="color:#f44336;"></i>Pontos Mapa
+                </div>
+            </header>
+
+            <div class="content-body pontoMapaClass pontoMapa_@ViewBag.pontoMapa.PON_DESCRICAO pontoMapa_@ViewBag.pontoMapa.PON_LATITUDE pontoMapa_@ViewBag.pontoMapa.PON_LONGITUDE" style="display:flex">
+                <div class="map" id="pontosMapa" style="height:600px"></div>
+
+            </div>
+        </section>
+    </div>
+
+</section>
+
+
+<script>
+
+    window.onload = initPage;
+
+    function initPage() {
+        carregarTelaOtimizarCarga();
+    }
+
+</script>

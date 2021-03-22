@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "Dynamic Forms";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //DynamicForms.Models.UsuarioSingleton obj = (DynamicForms.Models.UsuarioSingleton)ViewBag.usuarioSingleton;
+
+}
+
+<input type="hidden" id="Tipo" value="@ViewBag.Tipo" />
+<input type="hidden" id="Url" value="@ViewBag.Url" />
+
+@{
+    if (!String.IsNullOrEmpty(@ViewBag.Tipo) && !String.IsNullOrEmpty(@ViewBag.Url))
+    {
+        <script>
+          
+
+            window.onload = function () {
+                var tipo = document.getElementById('Tipo').value;
+                var url = document.getElementById('Url').value;
+
+                if (tipo === 'CLASSE') {
+                    criarPaginaInicial(url);
+                } else {
+                    criarPaginaInsert(url);
+                }
+            };
+        </script>
+    }
+}
+
+
+
+

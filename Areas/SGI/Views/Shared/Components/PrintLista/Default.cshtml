@@ -1,0 +1,53 @@
+﻿<div class="col-xs-12 col-md-12 col-lg-12">
+    <section class="box ">
+        <div class="content-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Indicador</th>
+                            <th>Ano Ant.</th>
+                            <th>@ViewBag.anoAtual</th>
+                            <th>Jan</th>
+                            <th>Fev</th>
+                            <th>Mar</th>
+                            <th>Abr</th>
+                            <th>Mai</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Ago</th>
+                            <th>Set</th>
+                            <th>Out</th>
+                            <th>Nov</th>
+                            <th>Dez</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Indicadores)
+                        {
+                            if (item.Indicador.T_Metas.Count > 0)
+                            {
+                                switch (item.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO)
+                                {
+                                    case (int)DynamicForms.Areas.PlugAndPlay.Enums.TipoAlvo.Valor:
+                                        @await Component.InvokeAsync("PrintRowValor", new { indicador = item.Indicador })
+                                        break;
+                                    case (int)DynamicForms.Areas.PlugAndPlay.Enums.TipoAlvo.Percentual:
+                                        @await Component.InvokeAsync("PrintRowPercentual", new { indicador = item.Indicador })
+                                        break;
+                                    case (int)DynamicForms.Areas.PlugAndPlay.Enums.TipoAlvo.Data:
+                                        @await Component.InvokeAsync("PrintRowData", new { indicador = item.Indicador })
+                                        break;
+                                    case (int)DynamicForms.Areas.PlugAndPlay.Enums.TipoAlvo.DiaUtil:
+                                        @await Component.InvokeAsync("PrintRowDiaUtil", new { indicador = item })
+                                        break;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

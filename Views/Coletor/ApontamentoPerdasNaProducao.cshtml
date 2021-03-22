@@ -1,0 +1,88 @@
+﻿@model DynamicForms.Models.T_Usuario
+@{
+    ViewBag.Title = "Apontamento de Perdas na produção";
+    Layout = "";
+}
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+
+    <title>Apontamento de Perdas na produção</title>
+</head>
+
+<body>
+    <a href="/Coletor/Index">Voltar</a> <br /><br />
+
+    <form method="post" action="ApontamentoPerdasNaProducao">
+        <label for="pro_id">CÓDIGO DO PRODUTO</label>
+        <p><input type="text" class="campo" id="pro_id" name="pro_id" /></p>
+
+        <label for="quantidade">QUANTIDADE</label>
+        <p><input type="text" class="campo" id="quantidade" name="quantidade" /></p>
+
+        <label for="lote">LOTE</label>
+        <p><input type="text" class="campo" id="lote" name="lote" /></p>
+
+        <label for="sublote">SUB LOTE</label>
+        <p><input type="text" class="campo" id="sublote" name="sublote" /></p>
+
+        <label for="tip_id">TIPO PERDA</label>
+        <select class="campo" id="tip_id" name="tip_id">
+            <option value="">VAZIO</option>
+            <option value="500">PERDAS NA PRODUÇÃO</option>
+            <option value="551">PERDAS NA MOV. INTERNA</option>
+            <option value="551">PERDAS NA MOV. EXTERNA</option>
+        </select>
+
+        <p><input type="submit" value="Salvar" id="salvar" /></p>
+    </form>
+
+    <br />
+    <br />
+
+    <div id="resposta">
+        @if (ViewBag.Logs != null && ViewBag.ListObjetos != null)
+        {
+            //varre os logs para detectar se existe alguma mensagem de erro
+            //obs: tentei fazer com LINQ, porém, não consegui encontrar uma maneira de fazer LINQ em uma lista dinâmica
+            bool contem_erro = false;
+            foreach (var log in ViewBag.Logs)
+            {
+                if (log.Status.ToUpper() == "ERRO")
+                { contem_erro = true; }
+            }
+
+
+            //se não contem nenhum erro nos logs, mostra uma mensagem de sucesso apenas
+            if (!contem_erro)
+            {
+                <p>Sucesso ao apontar perda na produção !</p>
+            }
+            else //senão, mostra todos os logs
+            {
+                @foreach (var log in ViewBag.Logs)
+                {
+                    if (log.Status.ToUpper() == "ERRO")
+                    {
+                        <p>@log.MsgErro</p>
+                    }
+                    else
+                    {
+                        <p>@log.PrimaryKey</p>
+                    }
+                }
+
+                @foreach (dynamic obj in ViewBag.ListObjetos)
+                {
+                    if (obj.PlayAction.ToString().ToUpper() == "ALERT")
+                    {
+                        <p>@obj.PlayMsgErroValidacao</p>
+                    }
+                }
+            }
+
+        }
+    </div>
+</body>
+<script src="~/Functions/Script/Coletor/Coletor.js"></script>
+</html>

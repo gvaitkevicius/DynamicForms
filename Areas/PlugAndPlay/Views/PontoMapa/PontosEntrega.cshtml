@@ -1,0 +1,61 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.PontosEntrega
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Ponto Mapa</h2>
+
+<section class="box" style="height:500px;width:1000px;">
+    <div id="map" style="height:500px;width:1000px;">
+    </div>
+</section>
+
+@section styles{
+    <link href="~/lib/leaflet/leaflet.css" rel="stylesheet" />
+    <style>
+        .map {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            // initialize Leaflet
+            console.log(L);
+
+            var map = L.map('map').setView({ lon: @Model.PON_LONGITUDE.ToString().Replace(",","."), lat: @Model.PON_LATITUDE.ToString().Replace(",", ".") }, 5);
+            // add the OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 100,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            }).addTo(map);
+            // show the scale bar on the lower left corner
+            L.control.scale().addTo(map);
+            // show a marker on the map
+            L.marker({ lon: @Model.PON_LONGITUDE.ToString().Replace(",", "."), lat:@Model.PON_LATITUDE.ToString().Replace(",", ".")}).bindPopup('Origem:@Model.PON_DESCRICAO.ToString()').addTo(map);
+             $.ajax({
+                 url: '/PlugAndPlay/PontoMapa/ObterPontosEntrega',
+                 data:
+                     { dataAtual: '@Model.CAR_EMBARQUE_ALVO.ToString().Trim()', idCarga: '@Model.CAR_ID.ToString().Trim()', modo: '@Model.Modo.ToString().Trim()',
+                     },
+                        method: 'GET',
+                        success: function (result) {
+                            for (var i = 0; i < result.Db_pontosEntrega.length; i++) {
+                                var d = result.Db_pontosEntrega[i];
+                                L.marker({ lon: d.PON_LONGITUDE, lat:d.PON_LATITUDE}).bindPopup(d.PON_DESCRICAO+'- Carga: '+d.CAR_ID).addTo(map);
+                            }
+                        },
+                        error: function (msg) {
+                            console.log(msg);
+                        }
+                    });
+        });
+    </script>
+}

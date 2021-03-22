@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewData["Title"] = "Interface";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<input type="hidden" id="Url" value="@ViewBag.Url" />
+
+@{
+    if (!String.IsNullOrEmpty(@ViewBag.Url))
+    {
+        <script>
+            window.onload = function () {
+                var url = document.getElementById('Url').value;
+                renderizarBodyMaxTimeOut(url);
+            };
+        </script>
+    }
+}
+

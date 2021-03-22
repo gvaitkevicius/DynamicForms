@@ -1,0 +1,223 @@
+﻿
+@{
+    Layout = null;
+    dynamic dadosPedido = ViewData["dadosPedido"] as System.Dynamic.ExpandoObject;
+    dynamic listaTestes = ViewData["listaTestes"] as System.Collections.Generic.List<System.Dynamic.ExpandoObject>;
+    dynamic listaAmostras = ViewData["listaAmostras"] as System.Dynamic.ExpandoObject;
+    dynamic dadosOnduladeira = ViewData["dadosOnduladeira"] as System.Dynamic.ExpandoObject;
+    dynamic dadosConversao = ViewData["dadosConversao"] as System.Dynamic.ExpandoObject;
+    dynamic dadosPaletizacao = ViewData["dadosPaletizacao"] as System.Dynamic.ExpandoObject;
+    dynamic dadosVisuais = ViewData["listaVisual"] as System.Collections.Generic.List<System.Dynamic.ExpandoObject>;
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+        body {
+            font-family: Calibri;
+            font-size: 18px;
+        }
+
+        .div_title {
+            width: 100%;
+            border-top: solid;
+            border-bottom: solid;
+            border-width: 1px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        .div_content {
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .content_left {
+            position: absolute;
+            left: 0%;
+        }
+
+        .content_center {
+            position: absolute;
+            left: 30%;
+        }
+
+        .content_right {
+            position: absolute;
+            left: 60%;
+        }
+
+        .marcatexto {
+            background: #FFF950;
+            color: black;
+        }
+
+        table.ensaio {
+            border-collapse: collapse;
+        }
+
+            table.ensaio td {
+                border: 1px solid black;
+                text-align: center;
+            }
+
+            table.ensaio th {
+                border: 1px solid black;
+                text-align: center;
+            }
+    </style>
+</head>
+<body>
+    <!-- Begin Cabecalho -->
+    <section>
+        <table width="100%">
+            <tr>
+                <td align="left">
+                    <div><img src="~/images/logo/logo.jpg" width="300" height="100" /></div> <!-- Logo do cliente -->
+                </td>
+                <td align="left" style="padding-left:-2em;">
+                    <div><p style="font-size:40px; font-weight: bold;"><u>Laudo Técnico</u></p></div>
+                </td>
+                <td align="right">
+                    <div><img src="~/images/certification_iso.png" width="150" height="150" /></div>
+                </td>
+            </tr>
+        </table>
+    </section>
+    <br />
+    <section>
+        <form style="border: 1px solid black;">
+            <div class="div_content">
+                <span class="content_left"><b>Cliente: </b>@dadosPedido.clienteNome</span>
+                <span class="content_right">
+                    <b>Medidas Caixa: </b>@dadosConversao.comprimentoCaixaInterna x @dadosConversao.larguraCaixaInterna x @dadosConversao.alturaCaixaInterna (NBR 5985)
+                </span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Razão Social: </b></span>
+                <span class="content_right"><b>Composição: </b></span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Referência: </b>@dadosPedido.referencia</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_right"><b>Fechamento: </b>@dadosConversao.fechamento</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Produto: </b> @dadosPedido.ft</span>
+                <span class="content_right"><b>Qtde Pedida: </b>@dadosPedido.qtdProduzir</span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Pedido: </b>@dadosPedido.pedido</span>
+                <span class="content_center" style="padding-left:2em;"><b>Item: </b></span>
+                <span class="content_right"><b>Data de Fabr.: </b></span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Nota Fiscal: </b></span>
+                <span class="content_right"><b>Prazo Validade: </b></span>
+            </div>
+            <br />
+            <div class="div_content">
+                <span class="content_left"><b>Qtd Nota: </b></span>
+                <span class="content_right"><b>OF: </b></span>
+            </div>
+            <br />
+            <div class="div_content">
+
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <p><b>Teste Físico</b></p>
+        <table class="ensaio">
+            <thead>
+                <tr>
+                    <th style="width:30%">Ensaio</th>
+                    <th style="width:30%">Método</th>
+                    <th style="width:30%">Tipo avaliação</th>
+                    <th style="width:30%">Valor Encontrado</th>
+                    <th style="width:30%">Aprovado/Reprovado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (dynamic item in listaTestes)
+                {
+                    <tr>
+                        <td>@item.TES_NOME_TECNICO</td>
+                        <td>@item.TipoTeste.TT_NORMA</td>
+                        <td>@item.TipoTeste.TipoAvaliacao.TA_DESC</td>
+                        <td>@item.ResultLote.RL_VALOR_ENCONTRADO</td>
+                        <td>@item.ResultLote.RL_STATUS</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (dadosVisuais.Count != 0)
+        {
+            <p><b>Teste Visual</b></p>
+            <table class="ensaio">
+                <thead>
+                    <tr>
+                        <th style="width:30%">Nome</th>
+                        <th style="width:30%">Descrição</th>
+                        <th style="width:30%">Valor</th>
+                        <th style="width:30%">Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (dynamic item in dadosVisuais)
+                    {
+                        <tr>
+                            <td>@item.TIV_NOME</td>
+                            <td>@item.TIV_DESCRICAO</td>
+                            <td>@item.IPV_VALOR</td>
+                            <td>@item.IPV_OBS</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <p>
+            <b>Nota: </b>Certificamos que este lote foi controlado em todas as fases de fabricação por amostragem e os parâmetros utilizados para sua liberação são caracterizados segundo especificação do produto pré-aprovado
+            <br><u>Validade 12 meses desde que seja seguido as orientações de armazenamento:</u>
+        </p>
+        <p>><u> Armazenamento:</u></p>
+        <p>
+            - Mantenha nas embalagens originais (amarrados, paletes), manuseie com cuidado, utilize sistema PEPS(primeiro que entra, primeiro que sai) para evitar danos, retenção de umidade e excesso de manuseio.
+            <br>- Estocar em local coberto, sem incidência de luz solar direta e chuva, com pouca oscilação de temperatura e umidade relativa do ar.
+            <br>- Proteger de líquidos e vapores(nunca coloque a embalagem em contato direto com o chão).
+            <br>- Temperatura Ambiente : 23 +/- 1°C.
+            <br>- Umidade Relativa do Ar : 50 +/- 2%.
+        </p>
+        <p>><u> Utilização:</u></p>
+        <p>
+            - Evite Manuseio inadequado que possa danificar a estrutura da embalagem(amassamentos, rasgos, umidade, etc.).
+            <br>- Retire o filme strech(caso haja) junto com as fitas de arquear na hora e local de uso, desembalando um palete por vez.
+            <br>- Os paletes que não forem utilizados por inteiro, procure filma-los com filme strech para que seja mantida a integridade das embalagens no armazenamento.
+            <br>- Embalagens de papelão Ondulado- Classificada como Transporte, não sendo apropriado para contato direto com alimento
+        </p>
+    </section>
+
+    <section>
+        <br />
+        <div class="div_content">
+            <span class="content_left">
+                Informações sobre a Empresa
+            </span>
+        </div>
+    </section>
+
+
+</body>
+</html>

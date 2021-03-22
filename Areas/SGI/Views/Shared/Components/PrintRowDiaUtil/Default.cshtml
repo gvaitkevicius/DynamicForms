@@ -1,0 +1,140 @@
+﻿@using DynamicForms.Areas.SGI.Model
+@{
+    //Metas Ano Anterior
+    Graficos graficos = Model as Graficos;
+    MedicoesInd indicador = ViewBag.Indicador as MedicoesInd;
+    bool atingiuMeta = false;
+    decimal? valAlvoAnoAnt = 0;
+    if (graficos.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+    {
+        valAlvoAnoAnt = Convert.ToDecimal(graficos.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META);
+    }
+    decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+    decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+    //Metas Ano Atual
+    string valAlvoAnoAtu = graficos.Medicoes.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).META.ToString();
+    decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+    decimal vlrMetaMesAnoAtu = vlrMetaAnoAtu;
+
+    <tr class="tblDefault">
+        <td rowspan="2">@indicador.Indicador.IND_DESCRICAO - @indicador.Indicador.T_Negocio.NEG_DESCRICAO</td>
+        <td>Meta mês</td>
+        <td>@String.Format(ViewBag.formatoValor, vlrMetaAnoAnt)</td>
+        <td>@String.Format(ViewBag.formatoValor, vlrMetaAnoAtu)</td>
+        @for (int i = 0; i < 12; i++)
+        {
+            <td>@String.Format(ViewBag.formatoValor, vlrMetaMesAnoAtu)</td>
+        }
+    </tr>
+    <tr>
+        <td>Real mês</td>
+        @** Real Mês ano anterior **@
+        @{
+            decimal? realAnoAnt = 0;
+            if (graficos.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+            {
+                realAnoAnt = graficos.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+            }
+
+            switch (indicador.TIPO_COMPARADOR.ToString())
+            {
+                case "0"://Igual
+                    if (realAnoAnt == vlrMetaAnoAnt)
+                        {atingiuMeta = true;}
+                    break;
+
+
+                case "1"://Maior ou igual
+                    if (realAnoAnt >= vlrMetaAnoAnt)
+                        {atingiuMeta = true;}
+                    break;
+
+                case "2"://Menor ou igual
+                    if (realAnoAnt <= vlrMetaAnoAnt)
+                        {atingiuMeta = true;}
+                    break;
+            }
+        }
+        @if (atingiuMeta)
+        {
+            <td class="tblAtingiuMeta">@String.Format(ViewBag.formatoValor, realAnoAnt)</td>
+        }
+        else
+        {
+            <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { area = "sgi", idIndicador = indicador.Indicador.IND_ID, periodo = indicador.Ano.Substring(0,4) })"  data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(ViewBag.formatoValor, realAnoAnt)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Mês ano atual **@
+        @{
+            var realAnoAtual = graficos.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.Valor));
+            
+            switch (indicador.TIPO_COMPARADOR.ToString())
+            {
+                case "0"://Igual
+                    if (realAnoAtual == vlrMetaAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+
+
+                case "1"://Maior ou igual
+                    if (realAnoAtual >= vlrMetaAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+
+                case "2"://Menor ou igual
+                    if (realAnoAtual <= vlrMetaAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+            }
+        }
+        @if (atingiuMeta)
+        {
+            <td class="tblAtingiuMeta">@String.Format(ViewBag.formatoValor, realAnoAtual)</td>
+        }
+        else
+        {
+            <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { area = "sgi", idIndicador = indicador.Indicador.IND_ID, periodo =ViewBag.anoAtual })"  data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(ViewBag.formatoValor, realAnoAtual)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Preenche meses **@
+        @for (int i = 0; i < 12; i++)
+        {
+            decimal? vlrRealMes = 0;
+            if (graficos.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                vlrRealMes = Convert.ToDecimal(graficos.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+            }
+
+            switch (indicador.TIPO_COMPARADOR.ToString())
+            {
+                case "0"://Igual
+                    if (vlrRealMes == vlrMetaMesAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+
+
+                case "1"://Maior ou igual
+                    if (vlrRealMes >= vlrMetaMesAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+
+                case "2"://Menor ou igual
+                    if (vlrRealMes <= vlrMetaMesAnoAtu)
+                        {atingiuMeta = true;}
+                    break;
+            }
+
+            if (atingiuMeta)
+            {
+                <td class="tblAtingiuMeta">@String.Format(ViewBag.formatoValor, vlrRealMes)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { area = "sgi", idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })"  data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(ViewBag.formatoValor, vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr>
+        <td colspan="12"></td>
+    </tr>
+}

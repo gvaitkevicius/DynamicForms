@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Roteirizador";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link href="~/lib/leaflet/leaflet.css" rel="stylesheet" />
+    <style>
+        .map {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            border: 0.2em solid #c75c41;
+            box-shadow: #55322a;
+        }
+    </style>
+}
+
+@section Scripts{
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script src="~/lib/leaflet/dist/leaflet.ajax.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+        function gerarRota() {
+            var orig = $('#origem').val();
+            var dest = $('#destino').val();
+            $.ajax({
+                url: '/PlugAndPlay/Roteirizador/GerarMapa',
+                data: {
+                    Origem: orig,
+                    Destino: dest
+                },
+
+                method: 'GET',
+                success: function (result) {
+                    var map = L.map('map').setView({ lon: -51.39250000, lat: -22.12070000 }, 5);
+                    // add the OpenStreetMap tiles
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 100,
+                        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+                    }).addTo(map);
+                    // show the scale bar on the lower left corner
+                    L.control.scale().addTo(map);
+                    L.geoJson(result).addTo(map);
+                },
+                error: function (msg) {
+                    console.log(msg);
+                }
+            });
+        }
+    </script>
+}
+<section class="box">
+    <div class="form-group col-md-4">
+        <div>
+            <label>
+                Ponto de Origem
+            </label>
+            <input type="text" id="origem" class="form-control" />
+
+            <label>
+                Destino:
+            </label>
+            <input type="text" id="destino" class="form-control" />
+        </div>
+
+        <br />
+        <input type="button" id="btnsubmit" onclick="gerarRota()" value="Criar Rota" class="btn btn-info" />
+
+    </div>
+
+</section>
+<section>
+    <div id="map"></div>
+</section>
+
+
+

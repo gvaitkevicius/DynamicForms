@@ -1,0 +1,109 @@
+﻿
+@{
+    ViewData["Title"] = "Consulta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .tableFixHead {
+            overflow-y: auto;
+            height: 600px;
+            border-top: 1px solid black;
+        }
+
+            .tableFixHead thead th {
+                position: sticky;
+                top: 0;
+            }
+
+            /* Just common table stuff. Really. */
+            .tableFixHead table {
+                border-collapse: collapse;
+                border-color: #4F4F4F;
+                width: 100%;
+            }
+
+            .tableFixHead th td {
+                padding: 8px 16px;
+            }
+
+            .tableFixHead th {
+                background: #A9A9A9;
+                font-weight: bold;
+                color: black;
+            }
+
+        .btnPage {
+            margin-left: 15px;
+            height: 30px;
+            font-size: 12px;
+        }
+    </style>
+}
+
+<div>
+    <input id="idConsulta" type="hidden" value="@ViewBag.Id" />
+    <input id="qtdParametros" type="hidden" value="@ViewBag.qtdParametros" />
+    <h2>@ViewBag.Titulo - @ViewBag.Id</h2><br />
+    <h4>@ViewBag.Descricao</h4><br />
+</div>
+
+<div id="divParametrosConsulta">
+
+    @for (int i = 0; i < ViewBag.descParametros.Count; i++)
+    {
+        string idInput = "inputParam-" + i;
+        string idInput2 = "inputName-" + i;
+        <label>@ViewBag.descParametros[i]</label>
+        <input id="@idInput2" type="hidden" value="@ViewBag.nameParametros[i]" />
+        @if (ViewBag.typeParametros[i] == "DATE-TIME")
+        {
+            <input id="@idInput" class="_consulta_@ViewBag.typeParametros[i]_@i" type="datetime-local" style="height: 30px;" />
+        }
+        else if (ViewBag.typeParametros[i] == "DATE")
+        {
+            <input id="@idInput" class="consulta_@ViewBag.typeParametros[i]_@i" type="date" style="height: 30px;" />
+        }
+        else if (ViewBag.typeParametros[i] == "INT")
+        {
+            <input id="@idInput" class="consulta_@ViewBag.typeParametros[i]_@i" type="number" style="height: 30px;" />
+        }
+        else if (ViewBag.typeParametros[i] == "FLOAT")
+        {
+            <input id="@idInput" class="consulta_@ViewBag.typeParametros[i]_@i" type="number" step="any" style="height: 30px;" />
+        }
+        else
+        {
+            <input id="@idInput" class="consulta_@ViewBag.typeParametros[i]_@i" type="text" style="height: 30px;" />
+        }
+    }
+    @if (ViewBag.qtdParametros > 0)
+    {
+        <button id="btnConsultar" type="button" onclick="executarConsulta()" class="btn btn-primary btnPage">Exibir</button>
+        <button id="btnConsultar" type="button" onclick="exportar()" class="btn btn-success btnPage">Exportar</button>
+        <br />
+        <br />
+    }
+    else
+    {
+        <button id="btnConsultar" type="button" onclick="executarConsulta()" class="btn btn-primary btnPage" style="margin-left: 0px;">Exibir</button>
+        <button id="btnConsultar" type="button" onclick="exportar()" class="btn btn-success btnPage">Exportar</button>
+        <br />
+        <br />
+    }
+
+</div>
+
+<div id="divResultQuey">
+
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+    </script>
+    <script src="~/Functions/Script/Consultas/consultas.js"></script>
+}
+

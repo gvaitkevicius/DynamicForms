@@ -1,0 +1,218 @@
+﻿@using DynamicForms.Areas.PlugAndPlay.Models
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@model TargetProduto
+@{
+    ViewBag.Title = "Feedback de Desempenho";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script>
+        var ServerValues = {
+            target: @(Html.Raw(JsonConvert.SerializeObject(ViewBag.target))),
+            maquinaId: '@ViewBag.maquinaId',
+            equipeId: '@ViewBag.equipeId',
+        }
+    </script>
+    <!--global functions-->
+    <script src="~/Functions/Script/global-functions/global-functions.js"></script>
+    <!--graficos-->
+    <script src="~/Functions/Script/CanvasGauge/modalform.js"></script>
+    <!--Grafico velocimetro-->
+    @* ESTÁ FALTANDO O SCRIPT ABAIXO!!!! PENDENCIA *@
+    @*<script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/graficos.js"></script>*@
+    <!--Barra-cores-desenpenho-maquina-->
+    <script src="~/Functions/Script/global-functions/barra-cores-desempenho-maquinas.js"></script>
+    <!--modal botstrap create-->
+    <script src="~/css/bootstrap-modal-create/js/bootstrap-modal-create.js"></script>
+    <!--control icone carregando-->
+    <script src="~/Functions/Script/control-carregando.js"></script>
+    <script src="~/Functions/Script/div-alert-msg/js/alert-page.js"></script>
+    <!--Scripts da pagina-->
+    <script src="~/Functions/Script/Medicoes/FeedbackPeformace/js/validar-campos.js"></script>
+    <script src="~/Functions/Script/Medicoes/FeedbackPeformace/js/salvar-feedback.js"></script>
+    <script src="~/Functions/Script/global-functions/gauge-performace-producao.js"></script>
+    <script src="~/Functions/Script/Medicoes/FeedbackPeformace/js/global.js"></script>
+}
+@section Styles{
+    <!-- Progress Bar-->
+    <link href="~/css/progress-bar.css" rel="stylesheet" />
+    <!--Alert-->
+    <link href="~/Functions/Script/div-alert-msg/css/alert-page.css" rel="stylesheet" />
+    <!--Generic-->
+    @* ESTÁ FALTANDO O SCRIPT ABAIXO!!!! PENDENCIA *@
+    @*<link href="~/Content/css/responsive-info.css" rel="stylesheet" />*@
+    <link href="~/css/forms.css" rel="stylesheet" />
+    <!--control icone carregando-->
+    <link href="~/css/control-carregando.css" rel="stylesheet" />
+    <style>
+        .infoModalTop {
+            background-color: #eee;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+            .infoModalTop .title {
+                color: #505458;
+                font-weight: 600;
+            }
+
+            .infoModalTop .desc {
+            }
+    </style>
+}
+<input id="hfMovimentoId" type="hidden" value="@Model.MOV_ID" />
+<input id="hfTargetId" type="hidden" value="@Model.TAR_ID" />
+
+@*<input id="hfQtdPecaBoaProduzida" type="hidden" value="@ViewBag.qtdPecaBoaProduzida" />*@
+
+<div class="col-xs-12">
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        @*<div class="pull-right hidden-xs">
+                <ol class="breadcrumb">
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                </ol>
+            </div>*@
+    </div>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            @*<h2 class="title pull-left">
+                    Producao
+                </h2>*@
+        </header>
+        <div class="content-body">
+            @await Component.InvokeAsync("ProducaoDescTopPage", new
+                {
+                    maquina = ViewBag.movimento.Maquina.MAQ_DESCRICAO,
+                    op = ViewBag.op,
+                    pedido = ViewBag.movimento.ORD_ID,
+                    descricao = ViewBag.movimento.Produto.PRO_DESCRICAO
+                })
+            <div class="form-section">
+                <h4 class="form-section-title">Performance</h4>
+                <div class="row">
+                    <div class="col-md-3 col-sm-4">
+                        <div class="form-group">
+                            @await Component.InvokeAsync("BarraCoresDesenpenhoProducao", new { tipo = 1, label = false })
+                            @*<div class="row">
+                                    <div class="col-xs-6">
+                                        <label class="form-label">Resultado</label>
+                                        <div class="controls">
+                                            <input readonly type="text" value="@Model.RealizadoPerformace" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="form-label">Meta</label>
+                                        <div class="controls">
+                                            <input readonly type="text" value="@Model.MetaPerformace" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-8">
+                        <input id="hfTipoFeedPerformace" type="hidden" value="@Model.TAR_TIPO_FEEDBACK_PERFORMANCE.ToUpper()" />
+                        @await Component.InvokeAsync("PrintMotivo", new { sltId = "sltOcorrenciaPerformace", tipoFeed = Model.TAR_TIPO_FEEDBACK_PERFORMANCE })
+                        @await Component.InvokeAsync("PrintJustificativa", new { txtId = "txtJustificativaPerformace", tipoFeed = Model.TAR_TIPO_FEEDBACK_PERFORMANCE, heigth = "95px" })
+                    </div>
+                </div>
+            </div>
+            @if (Model.TAR_REALIZADO_TEMPO_SETUP != -1)
+            {
+                <div class="form-section">
+                    <h4 class="form-section-title">Setup</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        @await Component.InvokeAsync("BarraCoresDesenpenhoProducao", new { tipo = 2, label = false })
+                                    </div>
+                                    @*<div class="progress">
+                                            <div class="progress-bar animated fadeIn animated-duration-1s animated-delay-200ms" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;"> </div>
+                                            <div class="progress-bar animated fadeIn animated-duration-1s animated-delay-200ms" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 30%;"> </div>
+                                        </div>*@
+                                    @*<div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetup" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetup" class="form-control">
+                                            </div>
+                                        </div>*@
+                                    @*<div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetup" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetup" class="form-control">
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                            @await Component.InvokeAsync("PrintMotivo", new { sltId = "sltOcorrenciaSetup", tipoFeed = Model.TAR_TIPO_FEEDBACK_SETUP })
+                            <input id="hfTipoFeedSetup" type="hidden" value="@Model.TAR_TIPO_FEEDBACK_SETUP.ToUpper()" />
+                        </div>
+                        <div class="col-sm-6">
+                            @await Component.InvokeAsync("PrintJustificativa", new { txtId = "txtJustificativaSetup", tipoFeed = Model.TAR_TIPO_FEEDBACK_SETUP, heigth = "121px" })
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.TAR_REALIZADO_TEMPO_SETUP_AJUSTE != -1)
+            {
+
+                <div class="form-section">
+                    <h4 class="form-section-title">Setup ajuste</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            @await Component.InvokeAsync("BarraCoresDesenpenhoProducao", new { tipo = 3, label = false })
+                            @*<div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetupAjuste" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetupAjuste" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                            @await Component.InvokeAsync("PrintMotivo", new { sltId = "sltOcorrenciaSetupA", tipoFeed = Model.TAR_TIPO_FEEDBACK_SETUP_AJUSTE })
+                            <input id="hfTipoFeedSetupA" type="hidden" value="@Model.TAR_TIPO_FEEDBACK_SETUP_AJUSTE.ToUpper()" />
+                        </div>
+                        <div class="col-sm-6">
+                            @await Component.InvokeAsync("PrintJustificativa", new { txtId = "txtJustificativaSetup", tipoFeed = Model.TAR_TIPO_FEEDBACK_SETUP_AJUSTE, heigth = "121px" })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="text-right">
+                <a href="@ViewBag.urlAnterior" class="btn btn-default">Cancelar</a>
+                <button type="button" class="btn btn-success" id="btnSalvarFeedback">Salvar Feedback</button>
+            </div>
+        </div>
+    </section>
+</div>
+

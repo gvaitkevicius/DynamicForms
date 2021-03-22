@@ -1,0 +1,233 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.Carga
+@using System.Text
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Relatório de Romaneio</title>
+    <link href="~/css/dynamiccss.css" rel="stylesheet" />
+    <style>
+        
+    </style>
+</head>
+<body id="romaneio">
+    <!--Cabeçalho-->
+    <section>
+        <table id="romaneio_header">
+            <tr>
+                <td id="romaneio_logo" width="300">
+                    <div><img src="~/images/logo/logo.jpg" width="300" height="100" /></div> <!-- Logo do cliente -->
+                </td>
+                <td>
+                    <div><p class="romaneio_title" style="font-size: 20px;">Relatório Romaneio</p></div>
+                </td>
+                <td>
+                    <div id="romaneio_data"><p>@DateTime.Now</p></div>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <br />
+    <br />
+    <!--Corpo-->
+    <section id="romaneio_body">
+
+        @if (Model == null)
+        {
+            <h1>CARGA NÃO CONSOLIDA</h1>
+        }
+        else
+        {
+            <div class="romaneio_body_1 romaneio_title"><p>DADOS DA CARGA</p></div>
+            <table>
+                <tr>
+                    <td>Código: @Model.CAR_ID</td>
+                    @switch (@Model.CAR_STATUS)
+                    {
+                        case -1:
+                            <td>Status: DELETADA</td>
+                            break;
+                        case 1:
+                            <td>Status: ESTUDO</td>
+                            break;
+                        case 2:
+                            <td>Status: APROVADA</td>
+                            break;
+                        case 3:
+                            <td>Status: AGENCIADA</td>
+                            break;
+                        case 4:
+                            <td>Status: PIKING</td>
+                            break;
+                        case 5:
+                            <td>Status: CARREGANDO</td>
+                            break;
+                        case 6:
+                            <td>Status: DESPACHADA (CONSOLIDADA)</td>
+                            break;
+                        case 7:
+                            <td>Status: FATURADA</td>
+                            break;
+                        case 8:
+                            <td>Status: ENTREGUE PARCIAL</td>
+                            break;
+                        case 9:
+                            <td>Status: ENTREGUE</td>
+                            break;
+                        case 99:
+                            <td>Status: ESTORNADA</td>
+                            break;
+                    }
+                </tr>
+
+                <tr>
+                    <td>Início Carregamento: @Model.CAR_DATA_INICIO_PREVISTO</td>
+                    <td>Fim Carregamento: @Model.CAR_DATA_FIM_PREVISTO</td>
+                </tr>
+
+                <tr>
+                    <th colspan="2">PESOS E VOLUMES</th>
+                </tr>
+
+                <tr>
+                    <td>Peso Previsto: @Model.CAR_PESO_TEORICO</td>
+                    <td>Peso Real: @Model.CAR_PESO_REAL</td>
+                </tr>
+                
+                <tr>
+                    <td>Volume Previsto: @Model.CAR_VOLUME_TEORICO</td>
+                    <td>Volume Real: @Model.CAR_VOLUME_REAL</td>
+                </tr>
+                
+                <tr>
+                    <td>Peso Entrada: @Model.CAR_PESO_ENTRADA</td>
+                    <td>Peso Saída: @Model.CAR_PESO_SAIDA</td>
+                </tr>
+                
+                <tr>
+                    <td>Peso Embalagem: @Model.CAR_PESO_EMBALAGEM</td>
+                </tr>
+
+                <tr>
+                    <th colspan="2">OUTRAS INFORMAÇÕES</th>
+                </tr>
+                
+                <tr>
+                    <td>Justificativa de Carregamento: @Model.CAR_JUSTIFICATIVA_DE_CARREGAMENTO</td>
+                </tr>
+            </table>
+
+            <br /><br />
+            <div class="romaneio_body_1 romaneio_title"><p>DADOS DA TRANSPORTADORA</p></div>
+            @if (Model.TRA_ID != null)
+            {
+                <table>
+                    <tr>
+                        <td>Código: @Model.TRA_ID</td>
+                        <td>Nome: @Model.Transportadora.TRA_NOME </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Responsável: @Model.Transportadora.TRA_RESPONSAVEL </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Email: @Model.Transportadora.TRA_EMAIL</td>
+                        <td>Fone: @Model.Transportadora.TRA_FONE</td>
+                    </tr>
+                </table>
+            }
+            else
+            {
+                <p>Sem Dados da Transportadora</p>
+            }
+
+            <br /><br />
+            <div class="romaneio_body_1 romaneio_title"><p>DADOS DO VEÍCULO</p></div>
+            @if (Model.VEI_PLACA != null)
+            {
+                <table>
+                    <tr>
+                        <td>Placa: @Model.VEI_PLACA</td>
+                        <td colspan="2">Tipo: @Model.TipoVeiculo.TIP_DESCRICAO</td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">CAPACIDADES</th>
+                    </tr>
+                    <tr>
+                        <td>Metros³: @Model.Veiculo.VEI_CAPACIDADE_M3</td>
+                        <td>Largura: @Model.Veiculo.VEI_CAPACIDADE_LARGURA</td>
+                        <td>Comprimento: @Model.Veiculo.VEI_CAPACIDADE_COMPRIMENTO</td>
+                        <td>Altura: @Model.Veiculo.VEI_CAPACIDADE_ALTURA</td>
+                    </tr>
+                </table>
+            }
+            else
+            {
+                <p>Sem dados do veículo</p>
+            }
+
+            <br /><br />
+            <div class="romaneio_body_1 romaneio_title" style="margin-bottom: 5px;"><p>ITENS DA CARGA</p></div>
+            <table id="itens_carga_romaneio">
+                <tr>
+                    <th>Pedido</th>
+                    <th width="5%">Ordem Entrega</th>
+                    <th>Data de Entrega</th>
+                    <th width="5%">Qtd. Planejada</th>
+                    <th width="5%">Qtd. Realizada</th>
+                    <th width="5%">Qtd. Paletes</th>
+                </tr>
+
+                @{
+                    var itens = Model.ItensCarga.GroupBy(x => new { x.Oredr.Cliente.CLI_NOME, x.Oredr.Cliente.Observacoes });
+                }
+                @foreach (var i in itens)
+                {
+                    <tr class="tr_espacado">
+                        <th colspan="6">Cliente: @i.Key.CLI_NOME</th>
+                    </tr>
+                    <tr class="tr_espacado">
+                        @if(i.Key.Observacoes.Count > 0)
+                        {
+                            <th colspan="6" align="left" style="padding-left: 5px;">Observações:
+                            @{ 
+                                foreach (var obs in i.Key.Observacoes)
+                                {
+                                    <p style="font-weight: normal; margin-top: 2px; margin-bottom: 2px;">@obs.OBS_DESCRICAO</p>
+                                }
+                            }
+                            </th>
+                        }
+                    </tr>
+                    @foreach (var itens_carga in i)
+                    {
+                        var itemRomaneado = Model.V_ITENS_ROMANEADOS.Where(x => x.ORD_ID == itens_carga.ORD_ID).FirstOrDefault();
+                        if (itemRomaneado != null)
+                        {
+                            <tr align="center">
+                                <td>@itemRomaneado.ORD_ID</td>
+                                <td width="5%">@itemRomaneado.ITC_ORDEM_ENTREGA</td>
+                                <td>@itemRomaneado.ITC_ENTREGA_PLANEJADA</td>
+                                <td width="5%">@itemRomaneado.ITC_QTD_PLANEJADA</td>
+                                <td width="5%">@itemRomaneado.QTD_CONSOLIDADA</td>
+                                <td width="5%">@itemRomaneado.QTD_PALETES</td>
+                            </tr>
+                        }
+                    }
+                }
+            </table>
+        }
+    </section>
+
+    <!--Rodapé-->
+    <section>
+    </section>
+</body>
+</html>

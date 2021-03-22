@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Consulta Dicionario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .tableFixHead {
+            overflow-y: auto;
+            height: 600px;
+            border-top: 1px solid black;
+        }
+
+            .tableFixHead thead th {
+                position: sticky;
+                top: 0;
+            }
+
+            /* Just common table stuff. Really. */
+            .tableFixHead table {
+                border-collapse: collapse;
+                border-color: #4F4F4F;
+                width: 100%;
+            }
+
+            .tableFixHead th td {
+                padding: 8px 16px;
+            }
+
+            .tableFixHead th {
+                background: #A9A9A9;
+                font-weight: bold;
+                color: black;
+            }
+
+        .btnPage {
+            margin-left: 15px;
+            height: 30px;
+            font-size: 12px;
+        }
+    </style>
+}
+
+
+
+<div>
+    <h2>CONSULTA DICIONARIO</h2><br />
+    <h4>@ViewBag.Descricao - </h4><br />
+</div>
+
+<div>
+    <label>Pesquisar</label>
+    <input id="" class="" type="text" style="height: 30px;">
+    <button id="btnPesquisar" type="button" onclick="iniciarConsulta()" class="btn btn-primary btnPage">Buscar</button>
+    <button id="btnConsultar" type="button" onclick="exportarDados()" class="btn btn-success btnPage">Exportar</button>
+</div>
+
+<div id="divResultQuey">
+
+</div>
+
+@section Scripts {
+
+    <script src="~/Functions/Script/Dicionario/ConsultaDicionario.js"></script>
+
+}

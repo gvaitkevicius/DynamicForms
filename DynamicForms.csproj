@@ -1,0 +1,215 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>%24/DynamicForm/DynamicForms</SccProjectName>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+    <SccAuxPath>https://playsis.visualstudio.com</SccAuxPath>
+    <SccLocalPath>.</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>d62b7038-f9f4-45b0-822f-e0325ff71542</UserSecretsId>
+    <PackageReleaseNotes>teste</PackageReleaseNotes>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\PlugAndPlay\NovaPasta\**" />
+    <Compile Remove="wwwroot\css\NovaPasta1\**" />
+    <Compile Remove="wwwroot\Functions\Script\NovaPasta\**" />
+    <Content Remove="Areas\PlugAndPlay\NovaPasta\**" />
+    <Content Remove="wwwroot\css\NovaPasta1\**" />
+    <Content Remove="wwwroot\Functions\Script\NovaPasta\**" />
+    <EmbeddedResource Remove="Areas\PlugAndPlay\NovaPasta\**" />
+    <EmbeddedResource Remove="wwwroot\css\NovaPasta1\**" />
+    <EmbeddedResource Remove="wwwroot\Functions\Script\NovaPasta\**" />
+    <None Remove="Areas\PlugAndPlay\NovaPasta\**" />
+    <None Remove="wwwroot\css\NovaPasta1\**" />
+    <None Remove="wwwroot\Functions\Script\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\PlugAndPlay\Map\MovimentoEstoqueMap.cs" />
+    <Compile Remove="Areas\PlugAndPlay\Models\MovimentoEstoque.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\ExportQuery-20200428130614.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20200428165825.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20200428174245.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20200925095101.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201005110738.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201005110751.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201005111029.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201005112948.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201008102241.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102145520.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102145850.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102160648.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102162304.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102162734.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102162924.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102163008.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201102163353.xlsx" />
+    <Content Remove="wwwroot\ExportQuery-20201216145157.xlsx" />
+    <Content Remove="wwwroot\Reports\Logs\094807_9671951-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\142754_4413165-ImportarChapasVenda.json" />
+    <Content Remove="wwwroot\Reports\Logs\142806_7394280-ImportarProdutoCaixas.json" />
+    <Content Remove="wwwroot\Reports\Logs\142810_7125184-ImportarEstruturaProdutos.json" />
+    <Content Remove="wwwroot\Reports\Logs\142819_9343365-ImportarRoteiros.json" />
+    <Content Remove="wwwroot\Reports\Logs\142828_6269726-ImportarRoteiros.json" />
+    <Content Remove="wwwroot\Reports\Logs\142836_9910973-ImportarEstruturaProdutos.json" />
+    <Content Remove="wwwroot\Reports\Logs\142837_0206882-ImportarOrdensProducao.json" />
+    <Content Remove="wwwroot\Reports\Logs\142837_5675074-ImportarObservacoes.json" />
+    <Content Remove="wwwroot\Reports\Logs\143439_0692056-ImportarChapasVenda.json" />
+    <Content Remove="wwwroot\Reports\Logs\143503_5166029-ImportarProdutoCaixas.json" />
+    <Content Remove="wwwroot\Reports\Logs\143630_3467741-ImportarEstruturaProdutos.json" />
+    <Content Remove="wwwroot\Reports\Logs\143958_9524242-ImportarRoteiros.json" />
+    <Content Remove="wwwroot\Reports\Logs\144324_2801501-ImportarRoteiros.json" />
+    <Content Remove="wwwroot\Reports\Logs\164045_2447507-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164048_7708644-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164050_5060551-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\164108_7280829-ImportarChapasVenda.json" />
+    <Content Remove="wwwroot\Reports\Logs\164636_3344662-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164636_6854885-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164636_7536116-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\164637_7639498-ImportarChapasVenda.json" />
+    <Content Remove="wwwroot\Reports\Logs\164703_8364394-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164704_0224501-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164704_0484515-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\164709_8417829-ImportarProdutoCliche.json" />
+    <Content Remove="wwwroot\Reports\Logs\164710_3458117-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164710_3708132-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\164710_3838139-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\164715_5141073-ImportarRoteiros.json" />
+    <Content Remove="wwwroot\Reports\Logs\164721_4304457-ImportarEstruturaProdutos.json" />
+    <Content Remove="wwwroot\Reports\Logs\164721_5474524-ImportarOrdensProducao.json" />
+    <Content Remove="wwwroot\Reports\Logs\165322_2203987-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\165322_6081652-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\165322_6864006-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\165323_9736337-ImportarChapasVenda.json" />
+    <Content Remove="wwwroot\Reports\Logs\165851_2028985-ImportarGrupoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\165851_4259112-ImportarProdutoPapel.json" />
+    <Content Remove="wwwroot\Reports\Logs\165851_4609132-ImportarGrupoChapa.json" />
+    <Content Remove="wwwroot\Reports\Logs\170002_1149841-ImportarTintas.json" />
+    <Content Remove="wwwroot\Reports\PDF\Etiqueta_0081115000004_1_20_1_02_06_000899_0000021_164.pdf" />
+    <Content Remove="wwwroot\Reports\PDF\Etiqueta_0081115000005_1_10_1_02_06_000899_0000021_1.pdf" />
+    <Content Remove="wwwroot\Reports\PDF\Etiqueta_0081292000001_1_30_1_02_06_000843_0000031_2.pdf" />
+    <Content Remove="wwwroot\Rotativa\Objects.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="demo.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\PlugAndPlay\Views\Dicionario\Index.cshtml" />
+    <None Include="wwwroot\Functions\Script\play.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
+    <PackageReference Include="Itinero" Version="1.2.0" />
+    <PackageReference Include="Itinero.IO.Osm" Version="1.2.0" />
+    <PackageReference Include="Itinero.Optimization" Version="0.14.5" />
+    <PackageReference Include="KdTree" Version="1.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Analyzers" Version="2.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+    <PackageReference Include="NetBarcode" Version="1.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="P.Pager" Version="1.2.0" />
+    <PackageReference Include="P.Pager.Mvc.Core" Version="1.4.0" />
+    <PackageReference Include="QRCoder" Version="1.3.6" />
+    <PackageReference Include="Rotativa.AspNetCore" Version="1.1.1" />
+    <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\PainelGestor\" />
+    <Folder Include="wwwroot\Documentos\T_PRODUTOS\" />
+    <Folder Include="wwwroot\Functions\Script\Clipboard\" />
+    <Folder Include="wwwroot\images\logo\" />
+    <Folder Include="wwwroot\Reports\Logs\" />
+    <Folder Include="wwwroot\Reports\PDF\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="OptCLP">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptCLP.dll</HintPath>
+    </Reference>
+    <Reference Include="OptCuston">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptCuston.dll</HintPath>
+    </Reference>
+    <Reference Include="OptQueueBox">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptQueueBox.dll</HintPath>
+    </Reference>
+    <Reference Include="OptQueueCorrugator">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptQueueCorrugator.dll</HintPath>
+    </Reference>
+    <Reference Include="OptQueueTransport">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptQueueTransport.dll</HintPath>
+    </Reference>
+    <Reference Include="OptShered">
+      <HintPath>..\..\..\..\..\..\..\..\Play\bin\OptShered.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Context\ContextFactory.cs">
+      <ExcludedFromBuild>false</ExcludedFromBuild>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\PlugAndPlay\Views\PainelGestor\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="%281%29">
+      <HintPath>..\..\..\..\..\..\..\..\temp\opt\ (1).dll</HintPath>
+    </Reference>
+    <Reference Update="%282%29">
+      <HintPath>..\..\..\..\..\..\..\..\temp\opt\ (2).dll</HintPath>
+    </Reference>
+    <Reference Update="%283%29">
+      <HintPath>..\..\..\..\..\..\..\..\temp\opt\ (3).dll</HintPath>
+    </Reference>
+    <Reference Update="%284%29">
+      <HintPath>..\..\..\..\..\..\..\..\temp\opt\ (4).dll</HintPath>
+    </Reference>
+    <Reference Update="%285%29">
+      <HintPath>..\..\..\..\..\..\..\..\temp\opt\ (5).dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

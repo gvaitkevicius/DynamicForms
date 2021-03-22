@@ -1,0 +1,297 @@
+﻿<!--Begin Indicadores-->
+<br />
+
+<!--End Indicadores-->
+<!--- Begin Cadastros-->
+@*<li class="menusection">Cadastros</li>*@
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-home"></i>
+        <span class="title">Início</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Inicial)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+
+    </ul>
+</li>
+
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-cog"></i>
+        <span class="title">Engenharia</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Engenharia)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-truck"></i>
+        <span class="title">Transporte</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Transporte)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+<!-- End Cadastros-->
+<!--Begin Estoque-->
+@*<li class="menusection">Estoque</li>*@
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-barcode"></i>
+        <span class="title">Estoque</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Estoque)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+<!--End Estoque-->
+@*<li class="menusection">Qualidade</li>*@
+
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-users"></i>
+        <span class="title">Qualidade</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        <li><a class="" href="@Url.Action("Index", "Qualidade", new { area =  "PlugAndPlay"})"><i class="fa fa-gears"></i>GERENCIAR TESTES</a></li>
+        @{ foreach (var item in ViewBag.QA)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+<!--End Qualidade-->
+<!--Begin Vendas-->
+@*<li class="menusection">Vendas</li>*@
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-money"></i>
+        <span class="title">Vendas</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Vendas)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+<!--End Vendas-->
+<!--Begin Máquinas-->
+@*<li class="menusection">Máquinas</li>*@
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-check-square-o"></i>
+        <span class="title">Operação</span>
+        <span class="arrow open"></span>
+    </a>
+
+    <ul class="sub-menu">
+        <li class="menusection"><i class="fa fa-cogs" aria-hidden="true" style="margin-right: 5px;"></i>Máquinas</li>
+        @{ foreach (var item in ViewBag.MaquinasMenu)
+            {
+                if (item.MAQ_CONTROL_IP == null || item.MAQ_CONTROL_IP == "")
+                {
+                    <li>
+                        <a class="" href="@Url.Action("Index", "Medicoes", new { area =  "PlugAndPlay", id = item.MAQ_ID})">@item.MAQ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" href="@Url.Action("Index", "Medicoes", new { area = "PlugAndPlay", id = item.MAQ_ID, ip = item.MAQ_CONTROL_IP })">@item.MAQ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+        <li class="menusection"><i class="fa fa-users" aria-hidden="true" style="margin-right: 5px;"></i>Equipes</li>
+        @foreach (var item in ViewBag.MaquinaEquipes)
+        {
+            <li>
+                <a href="@Url.Action("Index", "Medicoes", new { area =  "PlugAndPlay", idEquipe = item.Key})">@item.Key</a>
+            </li>
+        }
+    </ul>
+</li>
+
+
+
+
+<!--End Máquinas-->
+<!--Begin Otimizadores-->
+@*<li class="menusection">Otimizadores</li>*@
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-bar-chart"></i>
+        <span class="title">Gestão</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        <li><a class="" asp-area="plugandplay" asp-controller="aps" asp-action="index"><i class="fa fa-gears"></i>APS</a></li>
+
+        <li id="mcadastros">
+            <a asp-area="plugandplay" asp-controller="painelgestor" asp-action="index">
+                <i class="fa fa-bar-chart"></i>
+                <span class="title">Painel do Gestor</span>
+            </a>
+        </li>
+        <li class="">
+            <a asp-area="sgi" asp-controller="Home" asp-action="Index">
+                <i class="fa fa-bar-chart"></i>
+                <span class="title">Dashboard</span>
+            </a>
+        </li>
+        @{ foreach (var item in ViewBag.Gestao)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+        <li class="menusection">INTERFACE</li>
+        <li>
+            <a onclick="renderizarBodyMaxTimeOut('/Interface/IndexAsync?id=2')" href="#"><i class="fa fa-database"></i>Interface</a>
+        </li>
+    </ul>
+</li>
+<!--End Otimizadores-->
+<!--Begin Administrativo-->
+@*<li class="menusection">Administrativo</li>*@
+
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-users"></i>
+        <span class="title">Administrador</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        @{ foreach (var item in ViewBag.Admin)
+            {
+                if (item.OBJ_TIPO.Trim() == "CLASSE")
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInicial('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="" onclick="criarPaginaInsert('/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID'); alterarUrl('DynamicWeb', '/DynamicWeb/DynamicForm?tipo=@item.OBJ_TIPO.Trim()&url=/DynamicWeb/GetClassForm?nome_classe=@item.OBJ_ID')" href="#">@item.OBJ_DESCRICAO</a>
+                    </li>
+                }
+            }
+        }
+    </ul>
+</li>
+<!--End Administrativo-->
+<li id="mcadastros">
+    <a href="javascript:;">
+        <i class="fa fa-book"></i>
+        <span class="title">Dicionario de Dados</span>
+        <span class="arrow open"></span>
+    </a>
+    <ul class="sub-menu">
+        <li><a class="" asp-area="plugandplay" asp-controller="dicionario" asp-action="index"><i class="fa fa-search"></i>Consulta</a></li>
+
+    </ul>
+</li>

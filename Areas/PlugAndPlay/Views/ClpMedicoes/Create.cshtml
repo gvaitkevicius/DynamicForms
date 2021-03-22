@@ -1,0 +1,123 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.ClpMedicoes
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    
+}
+@section Scripts{
+    <!--moment js-->
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/lib/moment.js/locale/pt-br.js"></script>
+    <!-- input mask -->
+    <script src="~/Functions/Script/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+
+    <script>
+        Quantidade.setAttribute('autocomplete','off');
+    </script>
+    
+}
+<h2>CLP - Medições </h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+
+    @*@Html.HiddenFor(model => model.MaquinaId, new { id = "MaquinaId", value = @ViewBag.Maq })*@
+    <input type="hidden" id="MaquinaId" name="MaquinaId" value="@ViewBag.Maq" />
+
+    @*@Html.HiddenFor(model => model.Emissao, new { id = "Emissao", @Value = @ViewBag.DataEmissao })*@
+    <input type="hidden" id="Emissao" name="Emissao" value="@ViewBag.DataEmissao" />
+
+    @*@Html.HiddenFor(model => model.Grupo, new { id = "Grupo", @Value = @ViewBag.Grupo })*@
+    <input type="hidden" id="Grupo" name="Grupo" value="@ViewBag.Grupo" />
+
+    @*@Html.HiddenFor(model => model.ClpOrigem, new { id = "ClpOrigem", @Value = @ViewBag.Origem })*@
+    <input type="hidden" id="ClpOrigem" name="ClpOrigem" value="@ViewBag.Origem" />
+
+    @*@Html.HiddenFor(model => model.Status, new { id = "Status", @Value = 0 })*@
+    <input type="hidden" id="Status" name="Status" value="0" />
+
+    @*@Html.HiddenFor(model => model.OcorrenciaId, new { id = "OcorrenciaId", @Value = "" })*@
+    <input type="hidden" id="OcorrenciaId" name="OcorrenciaId" value="" />
+
+    @*@Html.HiddenFor(model => model.TurnoId, new { id = "TurnoId", @Value = "" })*@
+    <input type="hidden" id="TurnoId" name="TurnoId" value="" />
+
+    @*@Html.HiddenFor(model => model.TurmaId, new { id = "TurmaId", @Value = "" })*@
+    <input type="hidden" id="TurmaId" name="TurmaId" value="" />
+
+    @*@Html.HiddenFor(model => model.Fase, new { id = "Fase", @Value = "" })*@
+    <input type="hidden" id="Fase" name="Fase" value="" />
+
+    @*@Html.HiddenFor(model => model.IdLoteClp, new { id = "IdLoteClp", @Value = 0 })*@
+    <input type="hidden" id="IdLoteClp" name="IdLoteClp" value="0" />
+
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        <label for="MaquinaId" class="control-label col-md-2">Máquina:</label>
+        <div class="col-md-4">
+            <span class="form-control" disabled="disabled">@ViewBag.Maq</span>
+        </div>
+        <label for="Quantidade" class="control-label col-md-2">Quantidade De Pulsos:</label>
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.Quantidade, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Quantidade, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Emissao" class="control-label col-md-2">Data de Emissão:</label>
+        <div class="col-md-4">
+            <span class="form-control" disabled="disabled">@ViewBag.DataEmissao</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="DataInicio" class="control-label col-md-2">Data de Início:</label>
+        @if (@ViewBag.FalgDate == 1)
+        {
+            <div class="col-md-4">
+                <span class="form-control" disabled="disabled">@ViewBag.DataInicio</span>
+                <input type="hidden" id="DataInicio" name="DataInicio" value="@ViewBag.DataInicio" />
+            </div>
+        }
+        else
+        {
+            <div class="col-md-4">
+                <input type="datetime-local" id="DataInicio" name="DataInicio" class="form-control">
+                @Html.ValidationMessageFor(model => model.DataInicio, "", new { @class = "text-danger" })
+            </div>
+        }
+        <label for="DataFim" class="control-label col-md-2">Data Fim:</label>
+        <div class="col-md-4">
+            <input type="datetime-local" id="DataFim" name="DataFim" class="form-control">
+            @Html.ValidationMessageFor(model => model.DataFim, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Grupo" class="control-label col-md-2">Grupo:</label>
+        <div class="col-md-4">
+            <span class="form-control" disabled="disabled">@ViewBag.Grupo</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ClpOrigem" class="control-label col-md-2">Origem (CLP):</label>
+        <div class="col-md-4">
+            <span class="form-control" disabled="disabled">@ViewBag.Origem</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <a href="@Url.Action("Index","Medicoes", new { area = "PlugAndPlay", id = @ViewBag.Maq, idEquipe = @ViewBag.Equ })" title=" Voltar" class="btn btn-default">
+                <span class="fa fa-backward"></span>  Voltar
+            </a>
+            <input type="submit" value="Salvar" class="btn btn-success" />
+        </div>
+
+    </div>
+</div>
+}

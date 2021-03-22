@@ -1,0 +1,298 @@
+﻿@model DynamicForms.Areas.PlugAndPlay.Models.Carga
+@{
+    dynamic horariosRecebimento = ViewData["horariosRecebimento"] as System.Collections.Generic.List<System.Dynamic.ExpandoObject>;
+    dynamic itensCargaWeb = ViewData["itensCargaWeb"] as System.Collections.Generic.List<System.Dynamic.ExpandoObject>;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Relatório de Carga Consolidada</title>
+
+    <style>
+        #carga_header p, p, td, th {
+            font-family: Calibri;
+            font-size: 13px;
+        }
+
+        .carga_titulo {
+            width: 100%;
+            border-top: solid;
+            border-bottom: solid;
+            border-width: 1px;
+        }
+
+            .carga_titulo p {
+                text-align: center;
+                margin: 0px;
+            }
+
+        #itens_carga {
+            border-collapse: collapse;
+        }
+
+            #itens_carga, #itens_carga th, #itens_carga td {
+                border: 1px solid black;
+            }
+
+                #itens_carga .tr_espacado_carga {
+                    background-color: #e8eefc;
+                    border-spacing: 8px 0px 0px 0px;
+                }
+
+        .td_palets {
+            background-color: #f2f5fa;
+        }
+    </style>
+</head>
+<body>
+    <!--Cabeçalho-->
+    <section>
+        <table id="carga_header" width="100%">
+            <tr>
+                <td id="romaneio_logo" align="left" width="300">
+                    <div><img src="~/images/logo/logo.jpg" width="300" height="100" /></div> <!-- Logo do cliente -->
+                </td>
+                <td align="center">
+                    <div id="romaneio_nome"><p style="font-size:18px">Relatório de Carga Consolidada</p></div>
+                </td>
+                <td align="right">
+                    <div id="romaneio_data"><p>@DateTime.Now</p></div>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <br />
+    <br />
+
+    @if (ViewData["msgErro"] != null && ViewData["msgErro"] as string != "")
+    {
+        <section id="romaneio_body">
+            <h1>ERRO AO GERAR O RELATÓRIO!</h1>
+            <br />
+            <p>@ViewData["msgErro"]</p>
+        </section>
+    }
+    else
+    {
+        <!--Corpo-->
+        <section id="romaneio_body">
+            @if (@Model == null)
+            {
+                <h1>NÃO EXITE PLANO DE CARGA!</h1>
+            }
+            else
+            {
+                <div class="carga_titulo"><p>DADOS DA CARGA</p></div>
+                <table width="100%">
+                    <tr>
+                        <td>CÓDIGO: @Model.CAR_ID</td>
+                        <td>DOCA: @Model.CAR_ID_DOCA</td>
+                        @switch (@Model.CAR_STATUS)
+                        {
+                            case -1:
+                                <td>STATUS: DELETADA</td>
+                                break;
+                            case 1:
+                                <td>STATUS: ESTUDO</td>
+                                break;
+                            case 2:
+                                <td>STATUS: APROVADA</td>
+                                break;
+                            case 3:
+                                <td>STATUS: AGENCIADA</td>
+                                break;
+                            case 4:
+                                <td>STATUS: PIKING</td>
+                                break;
+                            case 5:
+                                <td>STATUS: CARREGANDO</td>
+                                break;
+                            case 6:
+                                <td>STATUS: DESPACHADA (CONSOLIDADA)</td>
+                                break;
+                            case 7:
+                                <td>STATUS: FATURADA</td>
+                                break;
+                            case 8:
+                                <td>STATUS: ENTREGUE PARCIAL</td>
+                                break;
+                            case 9:
+                                <td>STATUS: ENTREGUE</td>
+                                break;
+                            case 99:
+                                <td>STATUS: ESTORNADA</td>
+                                break;
+                        }
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                        <th colspan="3">DATAS</th>
+                    </tr>
+
+                    <tr>
+                        <td>INICIO PREVISTO: @Model.CAR_DATA_INICIO_PREVISTO</td>
+                        <td>FIM PREVISTO: @Model.CAR_DATA_FIM_PREVISTO</td>
+                        <td>EMBARQUE ALVO: @Model.CAR_EMBARQUE_ALVO</td>
+                    </tr>
+                    <tr>
+                        <td>INICIO JANELA EMBARQUE: @Model.CAR_INICIO_JANELA_EMBARQUE</td>
+                        <td>FIM JANELA EMBARQUE: @Model.CAR_FIM_JANELA_EMBARQUE</td>
+                        <td></td>
+                    </tr>
+
+                    <tr></tr>
+
+                    <tr>
+                        <th colspan="3">PESOS E VOLUMES</th>
+                    </tr>
+                    <tr>
+                        <td>PESO CARREGADO: @String.Format("{0:0.##}", Model.CAR_PESO_REAL)</td>
+                        <td>VOLUME (M³) CARREGADO: @String.Format("{0:0.##}", Model.CAR_VOLUME_REAL)</td>
+                        <td>PESO EMBALAGEM: @Model.CAR_PESO_EMBALAGEM</td>
+                    </tr>
+                    <tr>
+                        <th colspan="3">OUTRAS INFORMAÇÕES</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p align="justify">
+                                OBSERVAÇÕES: @Model.CAR_OBSERVACAO_DE_TRANSPORTE
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+
+                <div class="carga_titulo"><p>DADOS DA TRANSPORTADORA</p></div>
+                @if (Model.TRA_ID != null)
+                {
+                    <table width="100%">
+                        <tr>
+                            <td>CÓDIGO: @Model.TRA_ID</td>
+                            <td>RESPONSÁVEL: @Model.Transportadora.TRA_RESPONSAVEL </td>
+                        </tr>
+                        <tr>
+                            <td>NOME: @Model.Transportadora.TRA_NOME </td>
+                            <td>FONE: @Model.Transportadora.TRA_FONE</td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <p>Sem informações da transportadora.</p>
+                }
+
+                <br />
+
+                <div class="carga_titulo"><p>DADOS DO VEÍCULO</p></div>
+                @if (Model.VEI_PLACA != null)
+                {
+                    <table width="100%">
+                        <tr>
+                            <td>PLACA: @Model.VEI_PLACA</td>
+                            <td colspan="2">TIPO: @Model.TipoVeiculo.TIP_ID</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4">CAPACIDADES</th>
+                        </tr>
+                        <tr>
+                            <td>METROS³: @Model.Veiculo.VEI_CAPACIDADE_M3</td>
+                            <td>LARGURA: @Model.Veiculo.VEI_CAPACIDADE_LARGURA</td>
+                            <td>COMPRIMENTO: @Model.Veiculo.VEI_CAPACIDADE_COMPRIMENTO</td>
+                            <td>ALTURA: @Model.Veiculo.VEI_CAPACIDADE_ALTURA</td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <p>Sem informações do veículo.</p>
+                }
+
+                <br />
+                <div class="carga_titulo"><p>ITENS DA CARGA</p></div>
+                <table id="itens_carga" width="100%">
+                    <tr>
+                        <th>PEDIDO</th>
+                        <th>PRODUTO</th>
+                        <th>DATA DE ENTREGA</th>
+                        <th width="5%">QTD. CARREGADA</th>
+                        <th width="5%">QTD. UE</th>
+                        <th width="5%">SALDO ESTOQUE UE</th>
+                        <th width="5%">M³</th>
+                        <th width="5%">PESO CARREGADO</th>
+                        <th width="15%">DIM. UE (L x C x A)</th>
+                        <th width="5%">ORDEM ENTREGA</th>
+                    </tr>
+                    @foreach (var itc in itensCargaWeb)
+                    {
+                        int i = 0;
+                        while (i < horariosRecebimento.Count && itc.CLI_ID != horariosRecebimento[i].CodCliente)
+                        {
+                            i++;
+                        }
+
+                        string horariosDoCliente = "";
+                        if (i < horariosRecebimento.Count)
+                        {
+                            horariosDoCliente = horariosRecebimento[i].HorariosRecebimento;
+                        }
+
+                        <tr class="tr_espacado_carga">
+                            <th colspan="10">
+                                CLIENTE: @itc.CLI_NOME - @itc.MUN_NOME, @itc.UF @itc.TRIANGULAR
+                            </th>
+                        </tr>
+
+                        <tr class="tr_espacado_carga">
+                            <th colspan="10" align="left">
+                                <span>Horários Recebimento: @horariosDoCliente</span>
+                                <span style="margin-left: 5px;">Total M³: @String.Format("{0:0.##}", itc.totalM3)</span>
+                                <span style="margin-left: 5px;">Peso Total: @String.Format("{0:0.##}", itc.totalPeso)</span>
+                            </th>
+                        </tr>
+
+                        @foreach (var itens_carga in itc.pedidos)
+                        {
+                            <tr align="center">
+                                <td>@itens_carga.ORD_ID</td>
+                                <td>@itens_carga.PRO_DESCRICAO</td>
+                                <td>@itens_carga.ORD_DATA_ENTREGA_DE.ToShortDateString()</td>
+                                <td width="5%">@itens_carga.ITC_QTD_PLANEJADA</td>
+
+                                <td width="5%">
+                                    <span>@itens_carga.QTD_UE</span>
+                                </td>
+                                <td width="5%">
+                                    <span>@itens_carga.SALDO_ESTOQUE_UE</span>
+                                </td>
+                                <td width="5%">@String.Format("{0:0.##}", itens_carga.M3_PEDIDO)</td>
+                                
+                                @{
+                                    var peso_total = itens_carga.ORD_PESO_UNITARIO * itens_carga.ORD_QUANTIDADE;
+                                }
+                                <td width="5%">@peso_total</td>
+
+                                <td width="5%">
+                                    <span>@itens_carga.PRO_LARGURA_EMBALADA</span> x
+                                    <span>@itens_carga.PRO_COMPRIMENTO_EMBALADA</span> x
+                                    <span>@itens_carga.PRO_ALTURA_EMBALADA</span>
+                                </td>
+                                <td width="5%">@itens_carga.ITC_ORDEM_ENTREGA</td>
+                            </tr>
+
+                        }
+                        <br />
+                    }
+                </table>
+            }
+        </section>
+    }
+    <!--Rodapé-->
+    <section>
+    </section>
+</body>
+</html>
