@@ -1,5 +1,6 @@
-﻿
-var lista_select = [];
+﻿var lista_select = [];
+var lista_select_tipo = [];
+
 
 function listarColunas(nomeTabela) {
       $.ajax({
@@ -13,10 +14,11 @@ function listarColunas(nomeTabela) {
                 var listaC = document.getElementById("listC");
                 var linhas = "";
                 for (var i = 0; i < result.length; i++) {
-                    var template = `<option onclick="selecionarCampo('${result[i].Name}')"
+                    var template = `<option onclick="selecionarCampo('${result[i].Name}', '${result[i].Type}')" type="${result[i].Type}"
                     value="${result[i].Name}"
                     id="${result[i].Name}" >${result[i].Name}</option>`;
                     linhas += template;
+                    
                 }
                 if (linhas == "") {
                     // linhas = `<tr><td colspan="3">Sem resultado.</td></tr>`
@@ -73,27 +75,29 @@ function insereComboBox(idAtual) {
     }
 }
 
-    function selecionarCampo(nomeCampo) {
+function selecionarCampo(nomeCampo,tipo) {
         var listaS = document.getElementById("listS");
         adicionarCamposViewSQL(nomeCampo);
         var campo = listaS.querySelector("#" + nomeCampo);
         if (campo == undefined || campo == null) {
-            var template = `<option value="${nomeCampo}" id="${nomeCampo}" >${nomeCampo}</option>`;      
+            var template = `<option value="${nomeCampo}"  id="${nomeCampo}" >${nomeCampo}</option>`;      
             listaS.innerHTML += template;
-            lista_select.push(nomeCampo)           
+            lista_select.push(nomeCampo);
+            lista_select_tipo.push(tipo);
             atualizaComboBox(nomeCampo);
         }
        
 }
 
-
-    function refreshPage() {
+ function refreshPage() {
         window.location.reload();
-        localStorage.clear(); 
+     localStorage.clear();
+     lista_select = [];
+     lista_select_tipo = [];
 }
 
 
-// MONTAGEM DO SQL NA TELA
+// verifica se uma coluna ja foi add
 function verificarSeEstaAdicionado(arr, str) {
     var adicionado = false;
     arr.forEach(function (ec) {
@@ -103,7 +107,30 @@ function verificarSeEstaAdicionado(arr, str) {
     })
     return adicionado;
 }
-     
+
+// Pegar os parametros que foi inserido para a consulta.
+function pesquisarComParametros() {
+    linhaParametro = {};
+    linhaParametro.coluna = [];
+    linhaParametro.filtro = [];
+    linhaParametro.operador = [];
+    linhaParametro.pesquisaTxt = [];
+    linhaParametro.tipo = [];
+
+    let length = $(".linhaPesquisa").length;
+    for (let i = 0; i < length; i++) {
+        linhaParametro.coluna.push($(`#divSelectParam${i} option:selected`).val());
+        linhaParametro.filtro.push($(`#divfiltro${i} option:selected`).val());
+        linhaParametro.operador.push($(`#divoperador${i} option:selected`).val());
+        linhaParametro.pesquisaTxt.push($(`#sel${i}`).val());
+        linhaParametro.tipo.push(lista_select_tipo[i])
+        
+    }
+    localStorage.setItem("LinhaParametro", JSON.stringify(linhaParametro));
+
+}
+
+// MONTAGEM DO SQL NA TELA
 function montarSQLView() { 
     EntidadesCamposEscolhidos = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
         var sql = "";
@@ -182,12 +209,12 @@ function adicionarCamposViewSQL(campo) {
         window.location.href = '/PlugAndPlay/dicionario/ConsultaDicionario';
 }
 
-
+// gera o painel de parametros
 function gerarPesquisaParametros(teste) {
 
     var select ='<div class="col-xs-3 col-sm-3 fixo"  style="margin-bottom:20px">';
     select += '<select class="form-control" id="divSelectParam" style="width:100% ">';
-    select += '<option value="defalut">Selecione o campo</option>';
+    select += '<option value="default">Selecione o campo</option>';
     select += '</select>';
     select += '</div>';
 
@@ -199,6 +226,7 @@ function gerarPesquisaParametros(teste) {
     select2 += '<option value="Maior ou igual">Maior ou igual</option>';
     select2 += '<option value="Menor">Menor que</option>';
     select2 += '<option value="Menor ou igual">Menor ou igual</option>';
+    select2 += '<option value="Diferente de">Diferente de</option>';
     select2 += '</select>';
     select2 += '</div>';
 
@@ -225,7 +253,7 @@ function gerarPesquisaParametros(teste) {
         $('#painelParametros').html(html);
 }
 
-
+// adicionar mais uma linha de parametros
 function adicionarLinhaPesquisa(){
     let clone = $(".linhaPesquisa").last().clone();
     var idAtual = 0;
@@ -251,10 +279,12 @@ function adicionarLinhaPesquisa(){
     $(`.inputLinha`).eq(length - 2).append(select_condicao);
     configurarIdsLinha();
     insereComboBox(idAtual);
+    
 
  
 }
 
+//insere os id das linhas do painel de parametros
 function configurarIdsLinha() {
     //configura o id dos selects de coluna
     $(`[id^='divSelectParam']`).each(function (index) {
@@ -287,7 +317,7 @@ function configurarIdsLinha() {
 }
 
 
-
+// excluir linha inserido
 function excluirPesquisaParam(index) {
     let length = $(".linhaPesquisa").length - 1;
 

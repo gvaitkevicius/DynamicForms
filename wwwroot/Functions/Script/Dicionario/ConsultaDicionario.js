@@ -136,7 +136,75 @@ var Tabela = {
     }
 }
 
+function pegarFiltros(input, selecionados, condicoes) {
+    var res = "";
+    var operadores = [];
 
+    //!!NAO REMOVER COMENTARIO !
+    // var parenteses_inicial_selecionados = [];
+    // $("[id^='parenteses_inicial'][data-ativo='true']").each(function(index, element){
+    //     parenteses_inicial_selecionados.push($(element).attr('id'));
+    // });
+
+    // var parenteses_final_selecionados = [];
+    // $("[id^='parenteses_final'][data-ativo='true']").each(function(index, element){
+    //     parenteses_final_selecionados.push($(element).attr('id'));
+    // });
+
+    $("[id^='divoperador']").each(function () {
+        operadores.push($(this).val());
+    });
+
+    for (let i = 0; i < selecionados.length; i++) {
+        if (i > input.length)
+            break;
+        //!!NAO REMOVER COMENTARIO !
+        // var parenteses_inicial_na_linha = "";
+        // var parenteses_final_na_linha = "";
+
+        // if(parenteses_inicial_selecionados != undefined && parenteses_final_selecionados != undefined){
+
+        //     parenteses_inicial_selecionados.forEach(function(index){
+
+        //         //pega o ultimo digitio do id (um numero contendo a linha que pertence)
+        //         if(index.substring(index.length - 1) == i) //se na lihnha atual tiver um parenteses inicial, define a variavel
+        //             parenteses_inicial_na_linha = "(";
+        //     });
+
+        //     parenteses_final_selecionados.forEach(function(index){
+
+        //         if(index.substring(index.length - 1) == i) //se na lihnha atual tiver um parenteses final, define a variavel
+        //             parenteses_final_na_linha = ")";
+        //     });
+
+        // }
+
+        coluna = selecionados[i];
+        if (condicoes[i] === 'parecido com')
+            res += coluna + '%' + input[i];
+        else if (condicoes[i] === 'igual a')
+            res += coluna + '=' + input[i];
+        else if (condicoes[i] === 'maior que')
+            res += coluna + '>' + input[i];
+        else if (condicoes[i] === 'maior ou igual a')
+            res += coluna + '>=' + input[i];
+        else if (condicoes[i] === 'menor que')
+            res += coluna + '<' + input[i];
+        else if (condicoes[i] === 'menor ou igual a')
+            res += coluna + '<=' + input[i];
+        else if (condicoes[i] === 'diferente de')
+            res += coluna + '<>' + input[i];
+        else if (condicoes[i] === 'between') {
+            res += coluna + '><' + input[i];
+        }
+
+
+        if (i <= operadores.length - 1)
+            res += operadores[i] == 0 ? '&;' : operadores[i] == 1 ? '|;' : null;
+    }
+
+    return res;
+}
 
 function copiarDadosTabela() {
 
