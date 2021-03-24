@@ -222,11 +222,11 @@ function gerarPesquisaParametros(teste) {
     select2 += '<select class="form-control" id="divfiltro" style="width:110% ">';
     select2 += '<option value="parecido com">parecido com</option>';
     select2 += '<option value="igual a">igual a</option>';
-    select2 += '<option value="Maior">Maior que</option>';
-    select2 += '<option value="Maior ou igual">Maior ou igual</option>';
-    select2 += '<option value="Menor">Menor que</option>';
-    select2 += '<option value="Menor ou igual">Menor ou igual</option>';
-    select2 += '<option value="Diferente de">Diferente de</option>';
+    select2 += '<option value="maior que">maior que</option>';
+    select2 += '<option value="maior ou igual a">maior ou igual a</option>';
+    select2 += '<option value="menor que">menor que</option>';
+    select2 += '<option value="menor ou igual a">menor ou igual a</option>';
+    select2 += '<option value="diferente de">diferente de</option>';
     select2 += '</select>';
     select2 += '</div>';
 
@@ -270,8 +270,8 @@ function adicionarLinhaPesquisa(){
 
     let length = $(".linhaPesquisa").length;
     let select_condicao = ` <select style="margin-left: 20%;" class='form-control' id='divoperador${length - 2}'>
-        <option value='0'>E</option>
-        <option value='1'>OU</option>
+        <option value='AND'>E</option>
+        <option value='OR'>OU</option>
     </select>`;
 
     $('#btnNovaLinha').eq(0).remove(); //remove o botao de adicionar

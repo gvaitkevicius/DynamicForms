@@ -1,4 +1,5 @@
-﻿function iniciarConsulta() {
+﻿// verifica se é consulta de uma ou mais tabela e faz o tratamento correto.
+function iniciarConsulta() {
     var sql = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
     var tabela = sql.entidades[0];
     var comand = JSON.parse(localStorage.getItem('SQL'));
@@ -17,16 +18,18 @@
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function (result) {
-                if (result.msg == "") 
-                    executaConsulta(result.sqlNovo);              
+                if (result.msg == "")
+                    executaConsulta(result.sqlNovo);
                 else
                     alert(result.msg);
             }
-          
+
         })
     }
-    else
+    else {
+        pegarFiltros(tabela);
         executaConsulta(comand);
+    }
     
 }
 
@@ -136,75 +139,60 @@ var Tabela = {
     }
 }
 
-function pegarFiltros(input, selecionados, condicoes) {
+function pegarFiltros(tabelaChave) {
+    var _linhas = JSON.parse(localStorage.getItem('LinhaParametro'));
     var res = "";
-    var operadores = [];
 
-    //!!NAO REMOVER COMENTARIO !
-    // var parenteses_inicial_selecionados = [];
-    // $("[id^='parenteses_inicial'][data-ativo='true']").each(function(index, element){
-    //     parenteses_inicial_selecionados.push($(element).attr('id'));
-    // });
-
-    // var parenteses_final_selecionados = [];
-    // $("[id^='parenteses_final'][data-ativo='true']").each(function(index, element){
-    //     parenteses_final_selecionados.push($(element).attr('id'));
-    // });
-
-    $("[id^='divoperador']").each(function () {
-        operadores.push($(this).val());
-    });
-
-    for (let i = 0; i < selecionados.length; i++) {
-        if (i > input.length)
+    for (let i = 0; i < _linhas.coluna.length; i++) {
+        if (i > _linhas.coluna.length)
             break;
-        //!!NAO REMOVER COMENTARIO !
-        // var parenteses_inicial_na_linha = "";
-        // var parenteses_final_na_linha = "";
+       
 
-        // if(parenteses_inicial_selecionados != undefined && parenteses_final_selecionados != undefined){
+        if (_linhas.coluna[i] !== "default" && _linhas.pesquisaTxt[i] !== "") {
 
-        //     parenteses_inicial_selecionados.forEach(function(index){
+            if (_linhas.filtro[i] === 'parecido com') {
+                res += _linhas.coluna[i] + ' LIKE ' + " '%" + _linhas.pesquisaTxt[i] + "%' ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
+            else if (_linhas.filtro[i] === 'igual a') {
+                res += _linhas.coluna[i] + ' = ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
 
-        //         //pega o ultimo digitio do id (um numero contendo a linha que pertence)
-        //         if(index.substring(index.length - 1) == i) //se na lihnha atual tiver um parenteses inicial, define a variavel
-        //             parenteses_inicial_na_linha = "(";
-        //     });
+            else if (_linhas.filtro[i] === 'maior que') {
+                res += _linhas.coluna[i] + ' > ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
+            else if (_linhas.filtro[i] === 'maior ou igual a') {
+                res += _linhas.coluna[i] + ' >= ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
+            else if (_linhas.filtro[i] === 'menor que') {
+                res += _linhas.coluna[i] + ' < ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
+            else if (_linhas.filtro[i] === 'menor ou igual a') {
+                res += _linhas.coluna[i] + ' <= ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
+            else if (_linhas.filtro[i] === 'diferente de') {
+                res += _linhas.coluna[i] + ' <> ' + _linhas.pesquisaTxt[i] + " ";
+                if (_linhas.operador[i] !== null)
+                    res += _linhas.operador[i] + " ";
+            }
 
-        //     parenteses_final_selecionados.forEach(function(index){
-
-        //         if(index.substring(index.length - 1) == i) //se na lihnha atual tiver um parenteses final, define a variavel
-        //             parenteses_final_na_linha = ")";
-        //     });
-
-        // }
-
-        coluna = selecionados[i];
-        if (condicoes[i] === 'parecido com')
-            res += coluna + '%' + input[i];
-        else if (condicoes[i] === 'igual a')
-            res += coluna + '=' + input[i];
-        else if (condicoes[i] === 'maior que')
-            res += coluna + '>' + input[i];
-        else if (condicoes[i] === 'maior ou igual a')
-            res += coluna + '>=' + input[i];
-        else if (condicoes[i] === 'menor que')
-            res += coluna + '<' + input[i];
-        else if (condicoes[i] === 'menor ou igual a')
-            res += coluna + '<=' + input[i];
-        else if (condicoes[i] === 'diferente de')
-            res += coluna + '<>' + input[i];
-        else if (condicoes[i] === 'between') {
-            res += coluna + '><' + input[i];
         }
-
-
-        if (i <= operadores.length - 1)
-            res += operadores[i] == 0 ? '&;' : operadores[i] == 1 ? '|;' : null;
     }
 
     return res;
 }
+
 
 function copiarDadosTabela() {
 
@@ -214,4 +202,3 @@ function copiarDadosTabela() {
     Tabela.selecionarTabela(tabelaDeDados);
 
 }
-
