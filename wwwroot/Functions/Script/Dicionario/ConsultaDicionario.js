@@ -9,17 +9,21 @@ function iniciarConsulta() {
         nomeTabela.push(sql.entidades[i])
     }
 
+
     if (sql.entidades.length > 1) {
         $.ajax({
             type: "GET",
             url: "/PlugAndPlay/Dicionario/SepararChaveTabela",
             timeout: 0, // 0 - sem tempo limite. Ou pode colocar outro valor em milessegundos
-            data: { tabelaNome: tabela, sql: comand, entidadesJSON: JSON.stringify(sql.entidades) },
+            data: { tabelaNome: tabela, sql: comand, entidadesJSON: JSON.stringify(sql.entidades)},
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function (result) {
-                if (result.msg == "")
-                    executaConsulta(result.sqlNovo);
+                if (result.msg == "") {
+                    var sqlFinal = " ";
+                    sqlFinal = result.sqlNovo + pegarFiltros(result.chavePkAlias, result.chavePK);
+                    executaConsulta(sqlFinal);
+                }
                 else
                     alert(result.msg);
             }
@@ -27,21 +31,29 @@ function iniciarConsulta() {
         })
     }
     else {
-        pegarFiltros(tabela);
-        executaConsulta(comand);
+        var sqlFinal = " ";
+        sqlFinal = comand + pegarFiltros(tabela);
+        executaConsulta(sqlFinal);
     }
     
 }
 
 
 function executaConsulta(comand) {
-   // var comand = JSON.parse(localStorage.getItem('SQL'));
+    var _linhas = JSON.parse(localStorage.getItem('LinhaParametro'));
+
+    var parametro = {
+        name: $("#divSelectPesquisa option:selected").val(),
+        value: $("#inputParam").val(),
+        qtde: _linhas.coluna.length
+    }
+
     Carregando.abrir('Processando ...');
     $.ajax({
         type: "GET",
         url: "/PlugAndPlay/Dicionario/ExecutarConsulta",
         timeout: 0, // 0 - sem tempo limite. Ou pode colocar outro valor em milessegundos
-        data: { sql: comand },
+        data: { sql: comand, pesquisaParamJSON: JSON.stringify(parametro)},
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (result) {
@@ -139,17 +151,57 @@ var Tabela = {
     }
 }
 
-function pegarFiltros(tabelaChave) {
+function atualizarComboBoxPesquisa() {
+    var linhas = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
+    var selectPes = document.getElementById("divSelectPesquisa");
+    var html = "";
+    if (linhas.campos !== undefined) {
+        for (var i = 0; i < linhas.campos.length; i++) {
+            var template = `<option  value="${linhas.campos[i]}" id="${linhas.campos[i]}" >${linhas.campos[i]}</option>`
+            html += template;
+        }
+        selectPes.innerHTML = html;
+    }
+    else {
+        var nomeTabela = linhas.entidades[0];
+        $.ajax({
+            type: "GET",
+            url: "/PlugAndPlay/Dicionario/listarColunas",
+            timeout: 0, // 0 - sem tempo limite. Ou pode colocar outro valor em milessegundos
+            data: { nomeTabela: nomeTabela},
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    var template = `<option value="${result[i].Name}" id="${result[i].Name}" >${result[i].Name}</option>`;
+                    html += template;
+
+                }
+                selectPes.innerHTML = html;
+            }
+        });
+
+    }
+
+}
+
+
+function pegarFiltros(tabelaChave,chavePK) {
     var _linhas = JSON.parse(localStorage.getItem('LinhaParametro'));
     var res = "";
-
+    var compara = " WHERE 1=1 AND "
+    let j = 0;
+     
     for (let i = 0; i < _linhas.coluna.length; i++) {
         if (i > _linhas.coluna.length)
             break;
+
+        if (_linhas.coluna[i] === chavePK)
+            _linhas.coluna[i] = tabelaChave;
        
 
         if (_linhas.coluna[i] !== "default" && _linhas.pesquisaTxt[i] !== "") {
-
+            j++;
             if (_linhas.filtro[i] === 'parecido com') {
                 res += _linhas.coluna[i] + ' LIKE ' + " '%" + _linhas.pesquisaTxt[i] + "%' ";
                 if (_linhas.operador[i] !== null)
@@ -190,7 +242,10 @@ function pegarFiltros(tabelaChave) {
         }
     }
 
-    return res;
+    if (j !== 0)
+        return compara + res;
+    else
+       return res;
 }
 
 
@@ -202,3 +257,5 @@ function copiarDadosTabela() {
     Tabela.selecionarTabela(tabelaDeDados);
 
 }
+
+atualizarComboBoxPesquisa();

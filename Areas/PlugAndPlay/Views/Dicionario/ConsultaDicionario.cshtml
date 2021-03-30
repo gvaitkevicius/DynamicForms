@@ -45,22 +45,31 @@
 
 <div>
     <h2>CONSULTA DICIONARIO</h2><br />
-    <h4>@ViewBag.Descricao - </h4><br />
+    <h4>@ViewBag.TabelaSelecionada - </h4><br />
 </div>
 
-<div>
-    <label>Pesquisar</label>
-    <input id="" class="" type="text" style="height: 30px;">
-    <button id="btnPesquisar" type="button" onclick="iniciarConsulta()" class="btn btn-primary btnPage">Buscar</button>
-    <button id="btnConsultar" type="button" onclick="exportarDados()" class="btn btn-success btnPage">Exportar</button>
-</div>
+<div class="col-xs-2 col-sm-2 fixo" style="display: flex ; width: 80%">  
+       
+        <select class="form-control" id="divSelectPesquisa" style="width: 15%">
+            <option value="default">Selecione o campo</option>
+     
+        </select>
+    
+        <input id="inputParam" class="" placeholder="Digite a pesquisa" type="text" style="height: 35px; margin-left: 8px">
+        <button id="btnPesquisar" type="button" onclick="iniciarConsulta()" class="btn btn-primary btnPage">Buscar</button>
+        <button id="btnConsultar" type="button" onclick="exportarDados()" class="btn btn-success btnPage">Exportar</button>
+    </div>
+        
 
-<div id="divResultQuey">
 
-</div>
 
-@section Scripts {
 
-    <script src="~/Functions/Script/Dicionario/ConsultaDicionario.js"></script>
+    <div id="divResultQuey" style="margin-top: 60px">
 
-}
+    </div>
+
+    @section Scripts {
+
+        <script src="~/Functions/Script/Dicionario/ConsultaDicionario.js"></script>
+
+    }

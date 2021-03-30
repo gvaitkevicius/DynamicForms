@@ -186,8 +186,14 @@ function adicionarCamposViewSQL(campo) {
             EntidadesCamposEscolhidos.campos = [];
             EntidadesCamposEscolhidos.campos.push(campo);
             if (EntidadesCamposEscolhidos.campos.length == 1) {
-                var teste = EntidadesCamposEscolhidos.entidades[0]  + "." + EntidadesCamposEscolhidos.campos[0];
-                EntidadesCamposEscolhidos.campos[0] = teste;
+                if (alias !== "") {
+                    var teste = alias + "." + EntidadesCamposEscolhidos.campos[0];
+                    EntidadesCamposEscolhidos.campos[0] = teste;
+                }
+                else {
+                    var teste = EntidadesCamposEscolhidos.entidades[0] + "." + EntidadesCamposEscolhidos.campos[0];
+                    EntidadesCamposEscolhidos.campos[0] = teste;
+                }
             }
         } else {
                 if (alias != "") {

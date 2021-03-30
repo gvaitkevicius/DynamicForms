@@ -7,7 +7,8 @@ function executarConsulta() {
     for (i = 0; i < qtdParametros; i++) {
         var parametro = {
             name: $("#inputName-" + i).val(),
-            value: $("#inputParam-" + i).val()
+            value: $("#inputParam-" + i).val(),
+         
         }
         listaParametros.push(parametro);
     }

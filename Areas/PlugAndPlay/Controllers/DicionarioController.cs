@@ -103,9 +103,9 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
 
                 }
 
-                
+                var chavePkAlias = entidades[0] + "." + chavePK;
 
-                return Json(new { msg, sqlNovo });
+                return Json(new { msg, sqlNovo , chavePkAlias, chavePK});
 
             }
            
@@ -164,28 +164,42 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
             return View();
         }
 
-        public IActionResult ExecutarConsulta(string sql)
+        public IActionResult ExecutarConsulta(string sql, string pesquisaParamJSON)
         {
             using (JSgi db = new ContextFactory().CreateDbContext(new string[] { }))
             {
                 string msg = "";
-                List<List<object>> resultadoQuery = ObterDadosDaQuery(db, ref msg, sql);
+                List<List<object>> resultadoQuery = ObterDadosDaQuery(db, ref msg, sql, pesquisaParamJSON);
                 return Json(new { resultadoQuery, msg });
             }
         }
 
-        private List<List<object>> ObterDadosDaQuery(JSgi db, ref string msg, string sql)
+        private List<List<object>> ObterDadosDaQuery(JSgi db, ref string msg, string sql,string pesquisaParamJSON)
         {
-            
+            string sqlParametros = "";
+
+
             List<List<object>> resultadoQuery = new List<List<object>>();
 
 
             if (sql != null)
             {
-                string _sql = sql;
-                if (!_sql.Contains("@"))
-                {// realizar consulta na base de dados
-                    resultadoQuery = ExecutarQuery(db, _sql, ref msg);
+
+                if (!String.IsNullOrEmpty(pesquisaParamJSON))
+                {
+                    var definicao =  new { name = "", value = "", qtde = 0 };
+                    var parametros = JsonConvert.DeserializeAnonymousType(pesquisaParamJSON, definicao);
+                    if(parametros.qtde == 1)
+                       sqlParametros = " WHERE " + parametros.name + " LIKE '%" + parametros.value + "%' ";
+                    else
+                       sqlParametros = " AND " + parametros.name + " LIKE '%" + parametros.value + "%' ";
+
+                    string _sql = sql + sqlParametros;
+                    if (!_sql.Contains("@"))
+                    {// realizar consulta na base de dados
+                        resultadoQuery = ExecutarQuery(db, _sql, ref msg);
+                       
+                    }
                 }
             }
             else
@@ -252,7 +266,7 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
             return resultadoQuery;
         }
 
-            public IActionResult listarColunas(string nomeTabela)
+        public IActionResult listarColunas(string nomeTabela)
         {
             Entity EntidadeSelecionada = Dicionario.GetActualEntityByName(nomeTabela);
             
@@ -300,13 +314,13 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
             return downloadUrl;
         }
 
-        public IActionResult Exportar(string sql)
+        public IActionResult Exportar(string sql, string pesquisaParamJSON)
         {
             using(JSgi db = new ContextFactory().CreateDbContext(new string[] { }))
             {
                 string msg = "";
                 string downloadUrl = "";
-                 List<List<object>> resultadoQuery = ObterDadosDaQuery(db, ref msg, sql);
+                 List<List<object>> resultadoQuery = ObterDadosDaQuery(db, ref msg, sql, pesquisaParamJSON);
                 if(msg == "")
                 {
                     downloadUrl = CriarArquivo(resultadoQuery, ref msg);
