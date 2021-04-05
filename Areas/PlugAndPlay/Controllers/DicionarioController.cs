@@ -41,15 +41,21 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
         {
             usuario_logado = ObterUsuarioLogado(); //Obtem somente informações básicas
             ViewBag.UserName = usuario_logado.USE_NOME;
+           
 
             if (!ValidacoesUsuario.ValidarAcessoTela(usuario_logado, typeof(DicionarioController).FullName))
                 return RedirectToAction("SemAcesso", "Acesso", new { area = "" });
 
             return View();
         }
+      //  public IActionResult MostrarSQL(string tabelaNome, string sql, string entidadesJSON)
+     //   {
+             
+      //  }
 
         public IActionResult SepararChaveTabela(string tabelaNome, string sql, string entidadesJSON) // pega a chave primaria da tabela selecionada para poder fazer a consulta das tabelas com relação
         {
+
             string sqlNovo = "";
             List<string> entidades = JsonConvert.DeserializeObject<List<string>>(entidadesJSON);
             using (JSgi db = new ContextFactory().CreateDbContext(new string[] { }))
@@ -170,15 +176,16 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
             {
                 string msg = "";
                 List<List<object>> resultadoQuery = ObterDadosDaQuery(db, ref msg, sql, pesquisaParamJSON);
-                return Json(new { resultadoQuery, msg });
+                return Json(new { resultadoQuery, msg, });
             }
         }
+
 
         private List<List<object>> ObterDadosDaQuery(JSgi db, ref string msg, string sql,string pesquisaParamJSON)
         {
             string sqlParametros = "";
 
-
+           
             List<List<object>> resultadoQuery = new List<List<object>>();
 
 
@@ -189,7 +196,7 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
                 {
                     var definicao =  new { name = "", value = "", qtde = 0 };
                     var parametros = JsonConvert.DeserializeAnonymousType(pesquisaParamJSON, definicao);
-                    if(parametros.qtde == 1)
+                    if(parametros.qtde == 0)
                        sqlParametros = " WHERE " + parametros.name + " LIKE '%" + parametros.value + "%' ";
                     else
                        sqlParametros = " AND " + parametros.name + " LIKE '%" + parametros.value + "%' ";
@@ -208,6 +215,8 @@ namespace DynamicForms.Areas.PlugAndPlay.Controllers
             }
 
             return resultadoQuery;
+           
+            
         }
 
         public List<List<object>> ExecutarQuery(JSgi db, string _sql, ref string msg)

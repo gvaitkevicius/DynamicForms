@@ -1,6 +1,46 @@
-﻿var lista_select = [];
+﻿
+var lista_select = [];
 var lista_select_tipo = [];
+var lista_menuInsert = [];
+var lista_estrutura = {};
 
+// mostra o menu para consultar e salvar o command sql
+function mostrarSQL(num) {
+    pesquisarComParametros();
+    var sql = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
+    if (sql != null) {
+    var tabela = sql.entidades[0];
+    var comand = JSON.parse(localStorage.getItem('SQL')); 
+        $.ajax({
+            type: "GET",
+            url: "/PlugAndPlay/Dicionario/SepararChaveTabela",
+            timeout: 0, // 0 - sem tempo limite. Ou pode colocar outro valor em milessegundos
+            data: { tabelaNome: tabela, sql: comand, entidadesJSON: JSON.stringify(sql.entidades) },
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                if (result.msg == "") {
+                    var sqlFinal = " ";
+                    sqlFinal = result.sqlNovo + pegarFiltros(result.chavePkAlias, result.chavePK);
+                }
+                else
+                    alert(result.msg);
+
+                // inserir dados no menu.
+                $(function () {
+                    $('#comandSql').val(sqlFinal)
+                });
+
+            }
+
+        })
+        if(num != 1)
+           expandirMenuSQL();
+    }
+    else if (num != 1)
+       expandirMenuSQL();
+
+}
 
 function listarColunas(nomeTabela) {
       $.ajax({
@@ -41,7 +81,7 @@ function listarRelacoes(nomeTabela) {
             contentType: "application/json; charset=utf-8",
             success: function (result) {
                 var listaC = document.getElementById("listE");
-                var linhas = "";
+                var linhas = `<option onclick="listarColunas('${nomeTabela}')" value="${nomeTabela} " id="${nomeTabela}" >${nomeTabela}</option>`;
                 for (var i = 0; i < result.length; i++) {
                     /**/
                     var template = `<option onclick="listarColunas('${result[i].Entity.Name}')" value="${result[i].Entity.Name}" id="${result[i].Entity.Name}" >${result[i].Entity.Name}</option>`
@@ -95,6 +135,7 @@ function selecionarCampo(nomeCampo,tipo) {
      lista_select = [];
      lista_select_tipo = [];
 }
+
 
 
 // verifica se uma coluna ja foi add
@@ -163,7 +204,7 @@ function montarSQLView() {
         }
         localStorage.setItem("SQL", JSON.stringify(sql));
         localStorage.setItem("EntidadesCamposEscolhidos", JSON.stringify(EntidadesCamposEscolhidos));
-        document.getElementById('TextSQL').innerHTML = sql;
+    document.getElementById('comandSql').innerHTML = sql;
 }
 function adicionarEntidadeViewSQL(entidade) {
         EntidadesCamposEscolhidos = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
@@ -211,9 +252,7 @@ function adicionarCamposViewSQL(campo) {
         montarSQLView();
 }
 
-  function executarConsulta() {
-        window.location.href = '/PlugAndPlay/dicionario/ConsultaDicionario';
-}
+
 
 // gera o painel de parametros
 function gerarPesquisaParametros(teste) {
@@ -327,14 +366,70 @@ function configurarIdsLinha() {
 function excluirPesquisaParam(index) {
     let length = $(".linhaPesquisa").length - 1;
 
-    //nao deixa excluir a linha principal e nem quando so tem 1
-    if (index != length && (length - 1) != -1) { 
-        $(".linhaPesquisa").eq(index).remove();
+    if ((length - 1) <= -1) {
+        return;
     }
+    //nao deixa excluir a linha principal e nem quando so tem 1
+    else if (index != length && (length - 1) != -1) { 
+        $(".linhaPesquisa").eq(index).remove();
+    } else if (index == length ) { //esta tentando excluir a linha mas ainda existe outra acima
+        //passa os botoes pra cima
+        $(".linhaPesquisa").eq(index).remove();
+        adicionarBotoesLinha(length - 1);
+    }
+
+
 
     configurarIdsLinha();
 
 }
+
+function adicionarBotoesLinha(index) {
+
+    let btnAdicionarLinha = elementoButton('', 'fa fa-plus', '', '', '', '', '', '', '', '', '', 'background:transparent;border:none');
+    btnAdicionarLinha = elementoSpan(btnAdicionarLinha, 'input-group-addon', 'btnNovaLinha', '', `onclick="adicionarLinhaPesquisa()"`);
+
+
+    //verifica se o botao nao existe(permitido apenas um botao de cada, na ultima linha), para entao adiciona-los na ultima linha   
+    if (!$(`#btnNovaLinha`).length) $(".inputLinha").last().append(btnAdicionarLinha);
+
+      $(`#divoperador${index}`).remove();
+}
+
+function expandirMenuSQL() {
+
+    var container = document.getElementById("menuSQL");
+    if (container.style.display === "none") {
+        container.style.display = "block";
+    } else {
+        container.style.display = "none";
+    }
+
+}
+
+function inserirConsultaDicionario() {
+    var dados_lista = [];
+    var classeName = 'DynamicForms.Areas.PlugAndPlay.Models.Consultas';
+    lista_estrutura.CON_ID = $('#conID').val();
+    lista_estrutura.CON_COMAND = $('#comandSql').val();
+    lista_estrutura.CON_DESCRICAO = $('#conDESCRICAO').val();
+    lista_estrutura.CON_GRUPO = $('#conGRUPO').val();
+    lista_estrutura.CON_CONEXAO = $('#conCONEXAO').val();
+    lista_estrutura.CON_TITULO = $('#conTITULO').val(); 
+    lista_estrutura.CON_TIPO = $('#conTIPO').val();
+    lista_estrutura.IndexClone = undefined;
+    lista_estrutura.PlayAction = 'insert';
+    lista_estrutura.PlayMsgErroValidacao = undefined;
+
+     dados_lista.push(lista_estrutura);
+    insertBanco(dados_lista, classeName, 0); 
+
+  
+
+    dados_lista = [];
+    lista_estrutura = {};
+}
+
 
 gerarPesquisaParametros();
 configurarIdsLinha();

@@ -29,10 +29,8 @@
         }
 
         .sql-view {
-            background-color: #C4FFFF;
             padding: 12px;
             border: 1px solid gray;
-            color: blue;
             border-radius: 6px;
             word-wrap: break-word;
         }
@@ -44,7 +42,6 @@
         }
 
         .listEnt {
-            margin-left: 15px;
             width: 26%;
             float: left;
         }
@@ -161,81 +158,133 @@
 
 
 <div class="col-lg-12">
-  <section class="box">
-    <a onclick="voltarTopo()" id="backtop"></a>
-     <header class="panel_header" id="">
-       <h1 class="title">@ViewData["Title"]</h1>
-     </header>
+    <section class="box">
+        <a onclick="voltarTopo()" id="backtop"></a>
+        <header class="panel_header" id="">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </header>
 
-  <div class="" id="bodyDadosPesquisado">
-    <div class="panel-body">
-       <div class="row">
-          <div class="col-xs-12">
-             <div class="dataTables_wrapper form-inline no-footer" id="example2_wrapper">
-                <div class="panel-body">
-                   <div>
-                     <ul class="nav nav-tabs form0">
-                       <li class="active"></li>
-                     </ul>
+        <div class="" id="bodyDadosPesquisado">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="dataTables_wrapper form-inline no-footer" id="example2_wrapper">
+                            <div class="panel-body">
 
-                     <div class="tab-content" style="display:flex; flex-direction:row; flex-flow:wrap; justify-content: space-between;">
-                         <div class="container" style="padding-left: 0%; margin-left: 0%;">
-                             <div class="panel-group">
-                                 <div class="panel-title" style="width:101%; padding-left: 0%; margin-left: 0%;">
-                          
-                                         <nav id="painelParametros" class="navbar navbar-default">
-                                             
-                                         </nav>
-                                     
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
+                                <ul class="nav nav-tabs form0">
+                                    <li class="active"></li>
+                                </ul>
 
-                       <div style="margin-top:15px">
-                           <button type="submit" class="btn btn-warning " style="margin-right: 10px; padding: 9px; border-radius: 5px;" id="" onClick="refreshPage()"><i class="fa fa-eraser" style="padding-right: 7px;"></i>LIMPAR CAMPOS</button>
-                           <button asp-action="ConsultaDicionario" type="submit" class="btn btn-primary" style="padding: 9px; border-radius: 5px;" id="" onclick="pesquisarComParametros(); executarConsulta()"><i class="fa fa-play" style="padding-right: 7px;"></i>EXECUTAR CONSULTA</button>
-                       </div>
+                                <div class="tab-content" style="display:flex; flex-direction:row; flex-flow:wrap; justify-content: space-between;">
+                                    <div class="container" style="padding-left: 0%; margin-left: 0%;">
+                                        <div class="panel-group">
+                                            <div class="panel-title" style="width:106%; padding-left: 0%; margin-left: 0%;">
 
-                       <div class="row sql-view mt-5 mb-5" id="TextSQL">
+                                                <nav id="painelParametros" class="navbar navbar-default">
 
-                       </div>
+                                                </nav>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="Listas">
+                                        <div class="listEnt">
+                                            @{
+                                                Dictionary Dicionario = Dictionary.GetInstance();
+                                                <select id="listE" class="flot-demo-container" multiple size="20">
+                                                    @for (int i = 0; i < Dicionario.ActualEntities.Count(); i++)
+                                                    {
+                                                        <option value="@Dicionario.ActualEntities[i].Name" onclick="listarColunas('@Dicionario.ActualEntities[i].Name'); listarRelacoes('@Dicionario.ActualEntities[i].Name')"> @Dicionario.ActualEntities[i].Name</option>
+                                                    }
+                                                </select>
+                                            }
+                                        </div>
+
+                                        <div class="listColum">
+                                            <select id="listC" class="flot-demo-container" multiple size="20"></select>
+                                        </div>
+                                        <div class="listSel">
+                                            <select id="listS" class="flot-demo-container" multiple size="20"></select>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 15px;width:81%; ">
+                                        <button type="submit" onclick="mostrarSQL()" class="btn btn-default " style="margin-right: 10px; padding: 9px; border-radius: 5px;" id="btnMostrarSql"><i class="fa fa-arrow-down" style="padding-right: 7px;"></i>MOSTRAR SQL</button>
+                                        <button type="submit" class="btn btn-warning " style="margin-right: 10px; padding: 9px; border-radius: 5px;" id="" onClick="refreshPage()"><i class="fa fa-eraser" style="padding-right: 7px;"></i>LIMPAR CAMPOS</button>
+                                        <a asp-action="ConsultaDicionario" target="_blank" href="/PlugAndPlay/dicionario/ConsultaDicionario" class="btn btn-primary" style="float:right;padding: 9px; border-radius: 5px;" id="btnTeste" onclick="pesquisarComParametros()"><i class="fa fa-play" style="padding-right: 7px;"></i>EXECUTAR CONSULTA</a>
+
+                                    </div>
 
 
-                       <div class="Listas">
-                            <div class="listEnt">
-                                @{
-                                     Dictionary Dicionario = Dictionary.GetInstance();
-                                     <select id="listE" class="flot-demo-container" multiple size="20">
-                                       @for (int i = 0; i < Dicionario.ActualEntities.Count(); i++)
-                                       {
-                                         <option value="@Dicionario.ActualEntities[i].Name" onclick="listarColunas('@Dicionario.ActualEntities[i].Name'); listarRelacoes('@Dicionario.ActualEntities[i].Name')"> @Dicionario.ActualEntities[i].Name</option>
-                                       }
-                                     </select>
-                               }
+                                    <div id="menuSQL" style="display: none; margin-top: 15px;">
+                                        <div id="forms-menu" class="tab-pane fade in active">
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12">ID</p>
+                                                <input data-column="CON_ID" type="number" class="menu-right-click form-control inputLOCKprincipal10" id="conID" placeholder="ID" title="ID">
+                                            </div>
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12" id="" style="">DESCRICAO</p>
+                                                <input data-column="CON_DESCRICAO" type="text" class="menu-right-click form-control inputprincipal11" id="conDESCRICAO" placeholder="DESCRICAO" maxlength="999999999" min="" max="" name="" title="DESCRICAO" size="">
+                                            </div>
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12">GRUPO</p>
+                                                <input id="conGRUPO" value="DICIONARIO" data-column="CON_GRUPO" type="text" class="menu-right-click form-control inputprincipal12" placeholder="GRUPO" maxlength="999999999" title="GRUPO">
+                                            </div>
+                                            <div class=" col-sm-12 col-md-12 col-lg-12 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12">COMAND</p>
+                                                <textarea id="comandSql" class="menu-right-click form-control col-12 inputprincipal13" rows="4" cols="50"></textarea>
+                                            </div>
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12" style="">CONEXAO</p>
+                                                <input type="text" value="PLAYCONECT" class="menu-right-click form-control inputprincipal14" id="conCONEXAO" placeholder="CONEXAO" maxlength="999999999" title="CONEXAO">
+                                            </div>
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12">TITULO</p>
+                                                <input type="text" class="menu-right-click form-control inputprincipal15" id="conTITULO" placeholder="TITULO" maxlength="999999999" title="TITULO">
+                                            </div>
+                                            <div class=" col-sm-4 col-md-4 col-xs-12 padding">
+                                                <p class="col-sm-12 col-md-12">TIPO</p>
+                                                <input data-column="CON_TIPO" type="text" class="menu-right-click form-control inputprincipal16" id="conTIPO" placeholder="TIPO" maxlength="999999999" title="TIPO">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 col-md-2" style="width: 80%; margin-top: 30px">
+                                            <button type="submit"  id="insertSalvar" onclick="inserirConsultaDicionario()" class="btn btn-success">Salvar</button>
+                                            <button  type="submit" style="margin-top: 15px; margin-left: 15%" id="insertSalvar" onclick="mostrarSQL(1)" class="btn btn-danger">Atualizar SQL</button>
+
+                                        </div>
+
+                                    </div>
+                                    <div style="width: 100%; margin-top: 3%" id="insert0">
+                                    </div>
+
+                                </div>
+
+
+
+
                             </div>
 
-                         <div class="listColum">
-                                <select id="listC" class="flot-demo-container" multiple size="10"></select>
-                         </div>
-                         <div class="listSel">
-                            <select id="listS" class="flot-demo-container" multiple size="15"></select>
-                         </div>
-                       </div>
-                   </div>
-                </div>
-             </div>
-          </div>
-       </div>
-    </div>
-  </div>
+                        </div>
 
-  </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 
+
+
+
+
+
+
+
 @section Scripts {
- <script src="~/Functions/Script/Dicionario/IniciarConsulta.js"></script>
+    <script src="~/Functions/Script/DynamicForm.js"></script>
+    <script language="javascript" type="text/javascript" src="~/Functions/Script/Dicionario/IniciarConsulta.js"></script>
+    <script language="javascript" type="text/javascript" src="~/Functions/Script/Dicionario/ConsultaDicionario.js"></script>
 }
 
 

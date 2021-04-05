@@ -1,4 +1,7 @@
-﻿// verifica se é consulta de uma ou mais tabela e faz o tratamento correto.
+﻿
+var qtdeParam = 0;
+
+// verifica se é consulta de uma ou mais tabela e faz o tratamento correto.
 function iniciarConsulta() {
     var sql = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
     var tabela = sql.entidades[0];
@@ -38,14 +41,13 @@ function iniciarConsulta() {
     
 }
 
-
+// executa query db
 function executaConsulta(comand) {
-    var _linhas = JSON.parse(localStorage.getItem('LinhaParametro'));
 
     var parametro = {
         name: $("#divSelectPesquisa option:selected").val(),
         value: $("#inputParam").val(),
-        qtde: _linhas.coluna.length
+        qtde: qtdeParam
     }
 
     Carregando.abrir('Processando ...');
@@ -99,12 +101,20 @@ function executaConsulta(comand) {
 
 function exportarDados() {
     var comand = JSON.parse(localStorage.getItem('SQL'));
+
+
+    var parametro = {
+        name: $("#divSelectPesquisa option:selected").val(),
+        value: $("#inputParam").val(),
+        qtde: qtdeParam
+    }
+
     Carregando.abrir('Processando ...');
     $.ajax({
         type: "GET",
         url: "/PlugAndPlay/Dicionario/Exportar",
         timeout: 0, // 0 - sem tempo limite. Ou pode colocar outro valor em milessegundos
-        data: { sql: comand },
+        data: { sql: comand, pesquisaParamJSON: JSON.stringify(parametro)},
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (result) {
@@ -154,6 +164,8 @@ var Tabela = {
 function atualizarComboBoxPesquisa() {
     var linhas = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
     var selectPes = document.getElementById("divSelectPesquisa");
+    var nomeTabela = document.getElementById("nomeTabela");
+    nomeTabela.innerHTML = linhas.entidades[0];
     var html = "";
     if (linhas.campos !== undefined) {
         for (var i = 0; i < linhas.campos.length; i++) {
@@ -173,9 +185,14 @@ function atualizarComboBoxPesquisa() {
             contentType: "application/json; charset=utf-8",
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var template = `<option value="${result[i].Name}" id="${result[i].Name}" >${result[i].Name}</option>`;
-                    html += template;
-
+                    if (linhas.entidades.length === 1) {
+                        var template = `<option value="${result[i].Name}" id="${result[i].Name}" >${result[i].Name}</option>`;
+                        html += template;
+                    }
+                    else {
+                        var template = `<option value="${linhas.entidades[0] + "." + result[i].Name}" id="${linhas.entidades[0] + "." + result[i].Name}" >${linhas.entidades[0] + "." + result[i].Name}</option>`;
+                        html += template;
+                    }
                 }
                 selectPes.innerHTML = html;
             }
@@ -201,9 +218,9 @@ function pegarFiltros(tabelaChave,chavePK) {
        
 
         if (_linhas.coluna[i] !== "default" && _linhas.pesquisaTxt[i] !== "") {
-            j++;
+            j++; qtdeParam++;
             if (_linhas.filtro[i] === 'parecido com') {
-                res += _linhas.coluna[i] + ' LIKE ' + " '%" + _linhas.pesquisaTxt[i] + "%' ";
+                res += _linhas.coluna[i] + ' LIKE ' + "'%" + _linhas.pesquisaTxt[i] + "%' ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
@@ -247,6 +264,7 @@ function pegarFiltros(tabelaChave,chavePK) {
     else
        return res;
 }
+
 
 
 function copiarDadosTabela() {
