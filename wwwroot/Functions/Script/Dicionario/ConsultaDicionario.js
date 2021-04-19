@@ -24,7 +24,7 @@ function iniciarConsulta() {
             success: function (result) {
                 if (result.msg == "") {
                     var sqlFinal = " ";
-                    sqlFinal = result.sqlNovo + pegarFiltros(result.chavePkAlias, result.chavePK);
+                    sqlFinal = result.sqlNovo + pegarFiltros2(result.chavePkAlias, result.chavePK);
                     executaConsulta(sqlFinal);
                 }
                 else
@@ -35,7 +35,7 @@ function iniciarConsulta() {
     }
     else {
         var sqlFinal = " ";
-        sqlFinal = comand + pegarFiltros(tabela);
+        sqlFinal = comand + pegarFiltros2(tabela);
         executaConsulta(sqlFinal);
     }
     
@@ -167,7 +167,7 @@ function atualizarComboBoxPesquisa() {
     var nomeTabela = document.getElementById("nomeTabela");
     nomeTabela.innerHTML = linhas.entidades[0];
     var html = "";
-    if (linhas.campos !== undefined) {
+    if (linhas.campos !== undefined && linhas.campos.length > 0) {
         for (var i = 0; i < linhas.campos.length; i++) {
             var template = `<option  value="${linhas.campos[i]}" id="${linhas.campos[i]}" >${linhas.campos[i]}</option>`
             html += template;
@@ -203,7 +203,7 @@ function atualizarComboBoxPesquisa() {
 }
 
 
-function pegarFiltros(tabelaChave,chavePK) {
+function pegarFiltros2(tabelaChave,chavePK) {
     var _linhas = JSON.parse(localStorage.getItem('LinhaParametro'));
     var res = "";
     var compara = " WHERE 1=1 AND "
@@ -225,33 +225,33 @@ function pegarFiltros(tabelaChave,chavePK) {
                     res += _linhas.operador[i] + " ";
             }
             else if (_linhas.filtro[i] === 'igual a') {
-                res += _linhas.coluna[i] + ' = ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " = '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
 
             else if (_linhas.filtro[i] === 'maior que') {
-                res += _linhas.coluna[i] + ' > ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " > '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
             else if (_linhas.filtro[i] === 'maior ou igual a') {
-                res += _linhas.coluna[i] + ' >= ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " >= '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
             else if (_linhas.filtro[i] === 'menor que') {
-                res += _linhas.coluna[i] + ' < ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " < '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
             else if (_linhas.filtro[i] === 'menor ou igual a') {
-                res += _linhas.coluna[i] + ' <= ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " <= '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }
             else if (_linhas.filtro[i] === 'diferente de') {
-                res += _linhas.coluna[i] + ' <> ' + _linhas.pesquisaTxt[i] + " ";
+                res += _linhas.coluna[i] + " <> '" + _linhas.pesquisaTxt[i] + "'" + " ";
                 if (_linhas.operador[i] !== null)
                     res += _linhas.operador[i] + " ";
             }

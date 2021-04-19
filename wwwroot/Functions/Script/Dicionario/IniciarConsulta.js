@@ -4,6 +4,9 @@ var lista_select_tipo = [];
 var lista_menuInsert = [];
 var lista_estrutura = {};
 
+var sql_tabela = [];
+
+
 // mostra o menu para consultar e salvar o command sql
 function mostrarSQL(num) {
     pesquisarComParametros();
@@ -21,7 +24,7 @@ function mostrarSQL(num) {
             success: function (result) {
                 if (result.msg == "") {
                     var sqlFinal = " ";
-                    sqlFinal = result.sqlNovo + pegarFiltros(result.chavePkAlias, result.chavePK);
+                    sqlFinal = result.sqlNovo + pegarFiltros2(result.chavePkAlias, result.chavePK);
                 }
                 else
                     alert(result.msg);
@@ -50,11 +53,11 @@ function listarColunas(nomeTabela) {
             data: { nomeTabela: nomeTabela },
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            success: function (result) {
+          success: function (result) {
                 var listaC = document.getElementById("listC");
                 var linhas = "";
                 for (var i = 0; i < result.length; i++) {
-                    var template = `<option onclick="selecionarCampo('${result[i].Name}', '${result[i].Type}')" type="${result[i].Type}"
+                    var template = `<option onclick="selecionarCampo('${result[i].Name}', '${result[i].Type}', '${nomeTabela}')" type="${result[i].Type}"
                     value="${result[i].Name}"
                     id="${result[i].Name}" >${result[i].Name}</option>`;
                     linhas += template;
@@ -63,11 +66,11 @@ function listarColunas(nomeTabela) {
                 if (linhas == "") {
                     // linhas = `<tr><td colspan="3">Sem resultado.</td></tr>`
                 }
-                listaC.innerHTML = linhas;
+              listaC.innerHTML = linhas;        
             }
         });
 
-      adicionarEntidadeViewSQL(nomeTabela);
+     adicionarEntidadeViewSQL(nomeTabela);
 }
 
 
@@ -81,24 +84,29 @@ function listarRelacoes(nomeTabela) {
             contentType: "application/json; charset=utf-8",
             success: function (result) {
                 var listaC = document.getElementById("listE");
-                var linhas = `<option onclick="listarColunas('${nomeTabela}')" value="${nomeTabela} " id="${nomeTabela}" >${nomeTabela}</option>`;
+                var listaSel = document.getElementById("listS");
+                var linhas = `<option onclick="listarColunas('${nomeTabela}')" value="${nomeTabela}" id="${nomeTabela}" >${nomeTabela}</option>`
+                var linhas_sel = `<option style="color: black; font-weight: bold" onclick="removerSel('${nomeTabela}','${-1}')" value="${nomeTabela}" id="${nomeTabela}" >${nomeTabela} ✦</option>`
+               // var linhas = `<option onclick="listarColunas('${nomeTabela}')" value="${nomeTabela} " id="${nomeTabela}" >${nomeTabela}</option>`;
                 for (var i = 0; i < result.length; i++) {
                     /**/
-                    var template = `<option onclick="listarColunas('${result[i].Entity.Name}')" value="${result[i].Entity.Name}" id="${result[i].Entity.Name}" >${result[i].Entity.Name}</option>`
+                    var template = `<option onclick="listarColunas('${result[i].Entity.Name}'); adicionarTabela('${result[i].Entity.Name}')" value="${result[i].Entity.Name}" id="${result[i].Entity.Name}" >${result[i].Entity.Name}</option>`;
                     /**/
-                    linhas += template;
+                    linhas += template;                 
+
                 }
                 if (linhas == "") {
                     // linhas = `<tr><td colspan="3">Sem resultado.</td></tr>`
                 }
                 listaC.innerHTML = linhas;
+                listaSel.innerHTML = linhas_sel;
             }
         });
 }
 
 // atualiza o select quando uma coluna é inserida
 function atualizaComboBox(nomeCampo) {
-    let length = $(".linhaPesquisa").length;
+    let length = $(".linhaPesquisa2").length;
 
         for (let i = 0;  i< length; i++) {
             var html = `<option value="${nomeCampo}" id="${nomeCampo}" >${nomeCampo}</option>`;
@@ -115,18 +123,124 @@ function insereComboBox(idAtual) {
     }
 }
 
-function selecionarCampo(nomeCampo,tipo) {
+function removeComboBox() {
+    let length = $(".linhaPesquisa2").length;
+    
+
+
+    for (let j = 0; j < length; j++) {
+        $(`#divSelectParam${j} option`).remove(); 
+        for (let i = 0; i < lista_select.length; i++) {
+            var html = `<option value="${lista_select[i]}" id="${lista_select[i]}" >${lista_select[i]}</option>`;
+               $("#divSelectParam" + j).append(html);
+        }
+
+    }
+}
+
+function adicionarTabela(nomeTab) {
+    var listaSel = document.getElementById("listS");
+    var tabela = listaSel.querySelector("#" + nomeTab);
+    if (tabela == undefined || tabela == null) {
+        var template = `<option style="color: black; font-weight: bold" onclick="removerSel('${nomeTab}','${1}')" value="${nomeTab}" id="${nomeTab}" >${nomeTab}</option>`;
+         listaSel.innerHTML += template;
+
+    }
+    
+}
+
+
+function selecionarCampo(nomeCampo, tipo, nomeTabela) {
+
+    var valor = nomeTabela + "." + nomeCampo;
         var listaS = document.getElementById("listS");
         adicionarCamposViewSQL(nomeCampo);
         var campo = listaS.querySelector("#" + nomeCampo);
-        if (campo == undefined || campo == null) {
-            var template = `<option value="${nomeCampo}"  id="${nomeCampo}" >${nomeCampo}</option>`;      
-            listaS.innerHTML += template;
-            lista_select.push(nomeCampo);
-            lista_select_tipo.push(tipo);
-            atualizaComboBox(nomeCampo);
+    if (campo == undefined || campo == null) {
+        var template = `<option class="${nomeTabela}" value="${valor}" onclick="removerSel('${nomeCampo}')" id="${nomeCampo}" >${nomeCampo}</option>`;
+        listaS.innerHTML += template;
+        lista_select.push(nomeCampo);
+        lista_select_tipo.push(tipo);
+        atualizaComboBox(nomeCampo);
+        console.log(lista_select);
+    }
+    /*else {
+        var template = `<option class="${nomeTabela}" value="${valor}" onclick="removerSel('${nomeCampo}')" id="${nomeCampo}" >${nomeCampo}</option>`;  
+        listaS.innerHTML += template;
+        lista_select.push(nomeCampo);
+        lista_select_tipo.push(tipo);
+        atualizaComboBox(nomeCampo);
+    }
+
+       */
+}
+// remover campos da consulta
+function removerSel(nomeCampo, tabOrColun) {
+    var sql = [];
+    var camposFinal = [];
+    sql = JSON.parse(localStorage.getItem('EntidadesCamposEscolhidos'));
+
+    var listaS = document.getElementById("listS");
+    var index = $('#listS option:selected').val();
+
+  if (tabOrColun == undefined) {
+        for (let i = 0; i < sql.campos.length; i++) {
+            if (index != sql.campos[i])
+                camposFinal.push(sql.campos[i]);
+            else
+                lista_select.splice(i, 1);
         }
-       
+      console.log(lista_select);
+        EntidadesCamposEscolhidos.campos = camposFinal;
+        localStorage.setItem('EntidadesCamposEscolhidos', JSON.stringify(EntidadesCamposEscolhidos));
+        $('#listS option:selected').remove();
+
+    }
+  else if (tabOrColun == -1)
+  {
+     refreshPage();
+  } 
+  else
+  {
+        //-----------------------------------------
+         var valores_coluna = [];
+         $(`.${index}`).each(function () {
+                var valor = $(this).val();
+                valores_coluna.push(valor);
+
+         });
+
+      if (valores_coluna.length > 0) {
+          for (let i = 0; i < valores_coluna.length; i++)
+              for (let j = 0; j < sql.campos.length; j++) {
+                  if (valores_coluna[i] == sql.campos[j]) {
+                      sql.campos.splice(j, 1);
+                      lista_select.splice(j, 1);
+                  }
+                 
+              }
+          
+          EntidadesCamposEscolhidos.campos = sql.campos;
+          localStorage.setItem('EntidadesCamposEscolhidos', JSON.stringify(EntidadesCamposEscolhidos));
+          $(`.${index}`).remove();
+      }
+        //-----------------------------------------
+        for (let i = 0; i < sql.entidades.length; i++) {
+            if (index != sql.entidades[i]) 
+                camposFinal.push(sql.entidades[i]);  
+                       
+        }
+
+
+        EntidadesCamposEscolhidos.entidades = camposFinal;
+        localStorage.setItem('EntidadesCamposEscolhidos', JSON.stringify(EntidadesCamposEscolhidos));
+        $('#listS option:selected').remove();
+    }
+
+    removeComboBox();
+    montarSQLView(); 
+    
+
 }
 
  function refreshPage() {
@@ -158,12 +272,12 @@ function pesquisarComParametros() {
     linhaParametro.pesquisaTxt = [];
     linhaParametro.tipo = [];
 
-    let length = $(".linhaPesquisa").length;
+    let length = $(".linhaPesquisa2").length;
     for (let i = 0; i < length; i++) {
         linhaParametro.coluna.push($(`#divSelectParam${i} option:selected`).val());
-        linhaParametro.filtro.push($(`#divfiltro${i} option:selected`).val());
-        linhaParametro.operador.push($(`#divoperador${i} option:selected`).val());
-        linhaParametro.pesquisaTxt.push($(`#sel${i}`).val());
+        linhaParametro.filtro.push($(`#divfiltros${i} option:selected`).val());
+        linhaParametro.operador.push($(`#divoperadores${i} option:selected`).val());
+        linhaParametro.pesquisaTxt.push($(`#sel2${i}`).val());
         linhaParametro.tipo.push(lista_select_tipo[i])
         
     }
@@ -198,12 +312,12 @@ function montarSQLView() {
 
                 for (var i = 1; i < EntidadesCamposEscolhidos.entidades.length; i++) {
                     alias = EntidadesCamposEscolhidos.entidades[i];
-                    sql += " INNER JOIN " + EntidadesCamposEscolhidos.entidades[i] + " " + alias + " ON @TABELA.CHAVE=TABELA.CHAVE@ ";
+                    sql += " LEFT JOIN " + EntidadesCamposEscolhidos.entidades[i] + " " + alias + " ON @TABELA.CHAVE=TABELA.CHAVE@ ";
                 }
             }
         }
         localStorage.setItem("SQL", JSON.stringify(sql));
-        localStorage.setItem("EntidadesCamposEscolhidos", JSON.stringify(EntidadesCamposEscolhidos));
+      localStorage.setItem("EntidadesCamposEscolhidos", JSON.stringify(EntidadesCamposEscolhidos));
     document.getElementById('comandSql').innerHTML = sql;
 }
 function adicionarEntidadeViewSQL(entidade) {
@@ -248,7 +362,7 @@ function adicionarCamposViewSQL(campo) {
                 }       
          }   
 
-        localStorage.setItem('EntidadesCamposEscolhidos', JSON.stringify(EntidadesCamposEscolhidos)); 
+       localStorage.setItem('EntidadesCamposEscolhidos', JSON.stringify(EntidadesCamposEscolhidos)); 
         montarSQLView();
 }
 
@@ -264,7 +378,7 @@ function gerarPesquisaParametros(teste) {
     select += '</div>';
 
     var select2 = '<div class="col-xs-2 col-sm-2 fixo">';
-    select2 += '<select class="form-control" id="divfiltro" style="width:110% ">';
+    select2 += '<select class="form-control" id="divfiltros" style="width:110% ">';
     select2 += '<option value="parecido com">parecido com</option>';
     select2 += '<option value="igual a">igual a</option>';
     select2 += '<option value="maior que">maior que</option>';
@@ -278,7 +392,7 @@ function gerarPesquisaParametros(teste) {
 
     var input = '<div class="form-group col-xs-3 col-sm-3 fixo" id="">';
     input += '<div class="input-group inputLinha" id="" style="width:200%; margin-left: 15%;">';
-    input += '<input type="text" class="form-control" id="sel" placeholder="Digite a pesquisa">';
+    input += '<input type="text" class="form-control" id="sel2" placeholder="Digite a pesquisa">';
     input += '<span class="input-group-addon" id="excluirLinhaPes" onclick="excluirPesquisaParam()">';
     input += '<button type="button" class="fa fa-trash" style="background:transparent;border:none"></button></span>';
     input += '<span class="input-group-addon" id="btnNovaLinha" onclick="adicionarLinhaPesquisa()">';
@@ -288,7 +402,7 @@ function gerarPesquisaParametros(teste) {
    
   
     var html = '<div class="divLinhas" id="linhas">';
-    html += '<div  class="linhaPesquisa collapse navbar-collapse">';
+    html += '<div  class="linhaPesquisa2 collapse navbar-collapse">';
 
     html += select + select2 + input + '</div></div>';
         
@@ -300,7 +414,7 @@ function gerarPesquisaParametros(teste) {
 
 // adicionar mais uma linha de parametros
 function adicionarLinhaPesquisa(){
-    let clone = $(".linhaPesquisa").last().clone();
+    let clone = $(".linhaPesquisa2").last().clone();
     var idAtual = 0;
     if (clone != undefined) {
         idAtual = clone.children().eq(0).children().prop('id');
@@ -313,8 +427,8 @@ function adicionarLinhaPesquisa(){
 
     $("#painelParametros").append(str);
 
-    let length = $(".linhaPesquisa").length;
-    let select_condicao = ` <select style="margin-left: 20%;" class='form-control' id='divoperador${length - 2}'>
+    let length = $(".linhaPesquisa2").length;
+    let select_condicao = ` <select style="margin-left: 20%;" class='form-control' id='divoperadores${length - 2}'>
         <option value='AND'>E</option>
         <option value='OR'>OU</option>
     </select>`;
@@ -337,19 +451,19 @@ function configurarIdsLinha() {
     });
 
     //configura o id dos selects de condicao
-    $(`[id^='divfiltro']`).each(function (index) {
-        $(this).attr('id', `divfiltro${index}`);
+    $(`[id^='divfiltros']`).each(function (index) {
+        $(this).attr('id', `divfiltros${index}`);
     });
 
     //configura o id dos inputs de valor
-    $(`[id^='sel']`).each(function (index) {
-        $(this).attr('id', `sel${index}`);
+    $(`[id^='sel2']`).each(function (index) {
+        $(this).attr('id', `sel2${index}`);
     });
 
 
     //configura o id do select de operador
-    $(`[id^='divoperador']`).each(function (index) {
-        $(this).attr('id', `divoperador${index}`);
+    $(`[id^='divoperadores']`).each(function (index) {
+        $(this).attr('id', `divoperadores${index}`);
     });
 
     //configura o id e o onclick do btn de remover linha
@@ -364,17 +478,17 @@ function configurarIdsLinha() {
 
 // excluir linha inserido
 function excluirPesquisaParam(index) {
-    let length = $(".linhaPesquisa").length - 1;
+    let length = $(".linhaPesquisa2").length - 1;
 
     if ((length - 1) <= -1) {
         return;
     }
     //nao deixa excluir a linha principal e nem quando so tem 1
     else if (index != length && (length - 1) != -1) { 
-        $(".linhaPesquisa").eq(index).remove();
+        $(".linhaPesquisa2").eq(index).remove();
     } else if (index == length ) { //esta tentando excluir a linha mas ainda existe outra acima
         //passa os botoes pra cima
-        $(".linhaPesquisa").eq(index).remove();
+        $(".linhaPesquisa2").eq(index).remove();
         adicionarBotoesLinha(length - 1);
     }
 
@@ -393,7 +507,7 @@ function adicionarBotoesLinha(index) {
     //verifica se o botao nao existe(permitido apenas um botao de cada, na ultima linha), para entao adiciona-los na ultima linha   
     if (!$(`#btnNovaLinha`).length) $(".inputLinha").last().append(btnAdicionarLinha);
 
-      $(`#divoperador${index}`).remove();
+      $(`#divoperadores${index}`).remove();
 }
 
 function expandirMenuSQL() {
